@@ -1,0 +1,2 @@
+# web
+### a Sails application
