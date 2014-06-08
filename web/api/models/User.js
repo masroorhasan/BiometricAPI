@@ -9,11 +9,17 @@
 module.exports = {
 
     attributes: {
-
-        username: {
-            type     : 'string',
-            unique   : true,
-            required : true
+	/*id: {
+	    type       : 'integer',
+	    primaryKey : true,
+	    unique     : true,
+	    required   : true
+	},*/
+        username : {
+            type       : 'string',
+	    primaryKey : true,
+            unique     : true,
+            required   : true
         },
         password: {
             type      : 'string',
