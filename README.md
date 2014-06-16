@@ -1,4 +1,4 @@
-FYDP
+Biometric API
 ====
 
-FYDP - Online payment API via face recognition
+API to help student authentication, verfication and certication on online education platforms.
