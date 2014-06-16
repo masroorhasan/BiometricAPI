@@ -13,10 +13,11 @@ module.exports = {
    * `TestController.helloWorld()`
    */
   helloWorld: function (req, res) {
-
-	  var out = TestService.helloWorld();
-	  res.send(out);
-	  return;
+  		var rand = 7;
+  		rand = TestService.moduleName.random();
+		res.send(rand);
+		console.log(rand);
+		return;
   }
 };
 
