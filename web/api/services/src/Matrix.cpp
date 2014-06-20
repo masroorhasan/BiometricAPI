@@ -7,6 +7,7 @@ cv::Scalar setColor(Local<Object> objColor);
 cv::Point setPoint(Local<Object> objPoint);
 cv::Rect* setRect(Local<Object> objRect);
 
+extern "C" 
 void Matrix::Init(Handle<Object> target) {
 	HandleScope scope;
 
@@ -22,6 +23,7 @@ void Matrix::Init(Handle<Object> target) {
 	target->Set(String::NewSymbol("Matrix"), m->GetFunction());
 }
 
+extern "C" 
 Handle<Value> Matrix::New(const Arguments &args) {
 	HandleScope scope;
 

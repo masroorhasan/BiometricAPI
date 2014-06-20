@@ -1,6 +1,7 @@
 #include "OpenCV.h"
 #include "Matrix.h"
 
+extern "C" 
 void OpenCV::Init(Handle<Object> target) {
 	HandleScope scope;
 
@@ -12,6 +13,7 @@ void OpenCV::Init(Handle<Object> target) {
 	NODE_SET_METHOD(target, "readImage", ReadImage);
 }
 
+extern "C" 
 Handle<Value> OpenCV::ReadImage(const Arguments &args) {
 	HandleScope scope;
 
@@ -21,8 +23,7 @@ Handle<Value> OpenCV::ReadImage(const Arguments &args) {
 
 		cv::Mat mat;
 
-		// TODO: cb?
-		// REQ_FUN_ARG(1, cb);
+		REQ_FUN_ARG(1, cb);
 
 		if (args[0]->IsNumber() && args[1]->IsNumber()) {
 	      mat = *(new cv::Mat(args[0]->Uint32Value(), args[1]->Uint32Value(), CV_64FC1));
@@ -44,8 +45,21 @@ Handle<Value> OpenCV::ReadImage(const Arguments &args) {
 	    }
 	    
 	    img->mat = mat;
+	    Local<Value> argv[2];
 
-	 	return scope.Close(String::New("ReadImage in OpenCV module"));	   
+	    argv[0] = Local<Value>::New(Null());
+	    argv[1] = im_;
+
+	    TryCatch try_catch;
+
+	    cb->Call(Context::GetCurrent()->Global(), 2, argv);
+
+	    if (try_catch.HasCaught()) {
+	      FatalException(try_catch);
+	    }
+
+    	return Undefined();
+	 	// return scope.Close(String::New("ReadImage in OpenCV module"));	   
 
 	} catch ( cv::Exception &e ){
 		// const char* err_msg = e.what();

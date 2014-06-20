@@ -13,11 +13,18 @@ module.exports = {
    * `CVController.init()`
    */
   init: function (req, res) {
-    // var rand = 7;
-    // rand = CVService.cv.random();
-    // res.send(rand);
-    // console.log(rand);
-    // return;
+      var asset = require('assert');
+      var fs = require('fs');
+      var cv = CVService.cv;
+
+      cv.readImage("./assets/images/mona.png", function(err, im) {
+          im.detectObject(cv.FACE_CASCADE, {}, function(err, faces) {
+              for(var i = 0; i < faces.length; i++) {
+                  console.log(faces[i]);
+              }
+          });
+      })
+
       res.send(CVService.cv.readImage());
       return;
   }
