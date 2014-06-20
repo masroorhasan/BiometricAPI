@@ -12,20 +12,29 @@
       			 ],
       "cflags!" : [ "-fno-exceptions"],
       "cflags_cc!": [ "-fno-rtti",  "-fno-exceptions"],
+      'cflags' : ['-Wno-unused-variable'],
       "conditions": [
-            ['OS == "mac"', {
-                
-                "xcode_settings": {
-                  "MACOSX_DEPLOYMENT_TARGET": "10.7",
-                  "GCC_ENABLE_CPP_EXCEPTIONS": "YES",        # -fno-exceptions
-                  "OTHER_CFLAGS": 
-                      [ "-g", "-mmacosx-version-min=10.7", "-std=c++11", "-stdlib=libc++", "-O3", "-  D__STDC_CONSTANT_MACROS", "-D_FILE_OFFSET_BITS=64", "-D_LARGEFILE_SOURCE", "-Wall" 
-                      ],
-                  "OTHER_CPLUSPLUSFLAGS": 
-                      [ "-g", "-mmacosx-version-min=10.7", "-std=c++11", "-stdlib=libc++", "-O3", "-D__STDC_CONSTANT_MACROS", "-D_FILE_OFFSET_BITS=64", "-D_LARGEFILE_SOURCE", "-Wall" 
-                      ]
-                }
-            }]
+            ['OS=="mac"', {
+            'include_dirs':['/usr/local/include/opencv2'],
+            'xcode_settings': {
+              'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
+            },
+            'libraries':[
+              '-lopencv_core', 
+              '-lopencv_imgproc', 
+              '-lopencv_calib3d',
+              '-lopencv_features2d', 
+              '-lopencv_objdetect', 
+              '-lopencv_video', 
+              '-lopencv_highgui', 
+              '-lopencv_contrib', 
+              '-lopencv_flann', 
+              '-lopencv_ml', 
+              '-lopencv_gpu', 
+              '-lopencv_legacy',
+              '-lopencv_nonfree'
+            ]
+          }]
 
           ]
     }
