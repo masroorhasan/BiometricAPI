@@ -8,7 +8,8 @@
       "sources": [ 
       				"src/init.cpp",
       				"src/OpenCV.cpp",
-      				"src/Matrix.cpp" 
+      				"src/Matrix.cpp",
+              "src/CascadeClassifierWrap.cpp"
       			 ],
       "cflags!" : [ "-fno-exceptions"],
       "cflags_cc!": [ "-fno-rtti",  "-fno-exceptions"],

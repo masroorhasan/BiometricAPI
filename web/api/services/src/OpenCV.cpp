@@ -30,7 +30,7 @@ Handle<Value> OpenCV::ReadImage(const Arguments &args) {
 
 	    } else if(args[0]->IsString()) {
 	    	std::string str = std::string(*v8::String::AsciiValue(args[0]->ToString()));
-      		mat = cv::imread(str, CV_LOAD_IMAGE_COLOR);
+      		mat = cv::imread(str);
       		if(!mat.data)
       			return v8::ThrowException(v8::Exception::TypeError(v8::String::New("Error reading image")));
 

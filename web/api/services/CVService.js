@@ -26,7 +26,7 @@ matrix.detectObject = function(classifier, opts, cb){
   if (cv._detectObjectClassifiers[classifier]){
     var face_cascade = cv._detectObjectClassifiers[classifier];
   } else{
-	  var face_cascade = new cv.CascadeClassifier(classifier);
+	var face_cascade = new cv.CascadeClassifier(classifier);
     cv._detectObjectClassifiers[classifier] = face_cascade;
   }
 
@@ -40,6 +40,8 @@ matrix.inspect = function(){
 	return "[Matrix " + size + " ]";
 
 }
+
+cv.FACE_CASCADE = path.resolve(__dirname, '../../assets/data/haarcascade_frontalface_alt.xml')
 
 module.exports = {
 	cv: cv,

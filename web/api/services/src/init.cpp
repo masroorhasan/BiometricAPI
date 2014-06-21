@@ -1,5 +1,6 @@
 #include "OpenCV.h"
 #include "Matrix.h"
+#include "CascadeClassifierWrap.h"
 
 extern "C" void
 init(Handle<Object> target) {
@@ -8,6 +9,7 @@ init(Handle<Object> target) {
 	//class Init's go here
 	OpenCV::Init(target);
 	Matrix::Init(target);
+	CascadeClassifierWrap::Init(target);
 }
 
 
