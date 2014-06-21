@@ -17,7 +17,10 @@
             ['OS=="mac"', {
             'include_dirs':['/usr/local/include/opencv2'],
             'xcode_settings': {
-              'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
+              'MACOSX_DEPLOYMENT_TARGET': '10.9',
+              'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+              'OTHER_CFLAGS': ['-g', '-mmacosx-version-min=10.9', '-stdlib=libc++'],
+              'OTHER_CPLUSPLUSFLAGS': ['-g', '-mmacosx-version-min=10.9', '-stdlib=libc++']
             },
             'libraries':[
               '-lopencv_core', 
@@ -32,7 +35,10 @@
               '-lopencv_ml', 
               '-lopencv_gpu', 
               '-lopencv_legacy',
-              '-lopencv_nonfree'
+              '-lopencv_nonfree',
+              '-lopencv_imgproc',
+              '-lopencv_photo',
+              '-lopencv_legacy'
             ]
           }]
 
