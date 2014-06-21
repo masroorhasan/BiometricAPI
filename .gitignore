@@ -1,0 +1,17 @@
+## Top level .gitignore
+
+*.swp
+
+# OSX files
+*.DS_STORE
+
+
+# Build directories
+build/
+
+# IDEs
+.netbeans
+nbproject
+.idea
+.node_history
+
