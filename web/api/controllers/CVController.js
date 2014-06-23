@@ -15,6 +15,13 @@ module.exports = {
   init: function (req, res) {
       var asset = require('assert');
       var fs = require('fs');
+      
+      // res.send(CVService.cv.readImage());
+      res.send("CV API");
+      return;
+  },
+
+  detect: function(req, res) {
       var path = require('path');
       var cv = CVService.cv;
 
@@ -22,15 +29,20 @@ module.exports = {
           im.detectObject(cv.FACE_CASCADE, {}, function(err, faces) {
               for(var i = 0; i < faces.length; i++) {
                   console.log(faces[i]);
-                  var x = faces[i];
-                  im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
+                  var coord = faces[i];
+                  im.ellipse(coord.x + coord.width/2, coord.y + coord.height/2, coord.width/2, coord.height/2);
               }
-              im.save(path.resolve(__dirname, '../../assets/images/out.png')); 
+              im.save(path.resolve(__dirname, '../../assets/images/out.png'));
           });
       });
 
-      // res.send(CVService.cv.readImage());
-      res.send("ok");
+      res.send("detecting...");
+      return;
+  },
+
+  recognize: function(req, res) {
+
+      res.send("recognize");
       return;
   }
 };
