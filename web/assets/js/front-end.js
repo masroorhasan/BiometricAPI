@@ -15,14 +15,13 @@ var SailsCollection = Backbone.Collection.extend({
                     this.set(images);
                 }, this));
 
-                this.socket.on("image", _.bind(function(msg) {
-                    var m = msg.uri.split("/").pop();
-                    if (m === "create") {
-                        this.add(msg.data);
-                    } else if (m === "update") {
-                        this.get(msg.data.id).set(msg.data);
-                    } else if (m === "destroy") {
-                        this.remove(this.get(msg.data.id));
+                this.socket.on("image", _.bind(function(res) {
+                    if (res.verb === "created") {
+                        this.add(res.data);
+                    } else if (res.verb === "updated") {
+                        this.get(res.data.id).set(res.data);
+                    } else if (res.verb === "destroyed") {
+                        this.remove(this.get(res.data.id));
                     }
                 }, this));
             }, this));
@@ -55,31 +54,38 @@ var ImageView = Backbone.View.extend({
     template: _.template("<div>ID: <%= id %> <div id='canvasHolder'></div><input id='imageToForm'/><img id='preview'/><img src='<%= imageData %>' style='min-width:80px;min-height:80px;'></img><button class='captureImage'>Capture</button></div>"),
     render: function() {
         this.$el.html("");
+				this.$el.append($("<img>", { id: 'preview' }))
+								.append($("<input>" , { id: 'imageToForm' }))
+								.append($("<video>", { id: 'video', width: '640',height:'480', autoplay: '' }))
+							  .append($("<canvas>", { id: 'canvas', width: '640', height: '480' }))
+								.append($("<button>", { class: 'captureImage' }).text("capture"));
+
         this.collection.each(function(image) {
             this.$el.append(this.template(image.toJSON()));
         }, this)
     },
     captureImage: function() {
-        var canvas = this.$el.createElement('canvas ');
-        canvas.id = 'hiddenCanvas';
-        //add canvas to the body element
-        this.$el.appendChild(canvas);
-        //add canvas to #canvasHolder
-        $('#canvasHolder').appendChild(canvas);
-        var ctx = canvas.getContext('2d ');
-        canvas.width = video.videoWidth / 4;
-        canvas.height = video.videoHeight / 4;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        //save canvas image as data url
-        dataURL = canvas.toDataURL();
+        var canvas = $("<canvas>", { id: 'hiddenCanvas', width: '640', height: '480'});
+				this.$el.append(canvas);
 
-        newImage(dataURL);
+        var ctx = canvas[0].getContext('2d');
+        //canvas.width = this.video.videoWidth / 4;
+        //canvas.height = this.video.videoHeight / 4;
+        ctx.drawImage(video, 0, 0, canvas[0].width, canvas[0].height);
+        //save canvas image as data url
+        dataURL = canvas[0].toDataURL();
+
+	var newImage = this.collection.create({
+		id: null,
+		imageData: dataURL,
+	    	imageName: 'boop'
+	});
 
 
         //set preview image src to dataURL
-        this.$el('#preview').attr('src', dataURL);
+        this.$el.find("#preview").attr('src', dataURL);
         // place the image value in the text box
-        this.$el('#imageToForm').val(dataURL);
+        this.$el.find("#imageToForm").val(dataURL);
     }
 
 
@@ -97,6 +103,8 @@ $(function() {
 	var iView = new ImageView({ collection: images });
 
 	images.fetch();
+
+  setup();
 });
 
 /**
@@ -158,5 +166,4 @@ function error(e) {
     console.log(e);
 }
 
-addEventListener("load", setup);
 
