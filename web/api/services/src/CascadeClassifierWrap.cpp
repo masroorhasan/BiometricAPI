@@ -124,6 +124,7 @@ void CascadeClassifierWrap::AsyncDetectMultiScale(uv_work_t *req) {
   if(baton->im->mat.channels() != 1)
       cvtColor(baton->im->mat, gray, CV_BGR2GRAY);
 
+  //TODO: shrink camera image before equalizing
 
   equalizeHist( gray, gray);
   baton->cc->cc.detectMultiScale(gray, objects, baton->scale, baton->neighbors, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(baton->minw, baton->minh));

@@ -41,7 +41,8 @@ matrix.inspect = function(){
 
 }
 
-cv.FACE_CASCADE = path.resolve(__dirname, '../../assets/data/haarcascade_frontalface_alt.xml')
+cv.LBP_FRONTALFACE_CASCADE = path.resolve(__dirname, '../../assets/data/lbpcascade_frontalface.xml')
+cv.HAAR_FRONTALFACE_CASCADE = path.resolve(__dirname, '../../assets/data/haarcascade_frontalface_alt.xml')
 
 module.exports = {
 	cv: cv,

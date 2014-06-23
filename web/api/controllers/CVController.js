@@ -25,14 +25,14 @@ module.exports = {
       var path = require('path');
       var cv = CVService.cv;
 
-      cv.readImage(path.resolve(__dirname, '../../assets/images/sample/mona.png'), function(err, im) {
-          im.detectObject(cv.FACE_CASCADE, {}, function(err, faces) {
+      cv.readImage(path.resolve(__dirname, '../../assets/images/sample/lena.png'), function(err, im) {
+          im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
               for(var i = 0; i < faces.length; i++) {
                   console.log(faces[i]);
                   var coord = faces[i];
                   im.ellipse(coord.x + coord.width/2, coord.y + coord.height/2, coord.width/2, coord.height/2);
               }
-              im.save(path.resolve(__dirname, '../../assets/images/out/mona.png'));
+              im.save(path.resolve(__dirname, '../../assets/images/out/lena_out.png'));
           });
       });
 
