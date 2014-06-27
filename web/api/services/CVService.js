@@ -21,14 +21,14 @@ var matrix = cv.Matrix.prototype;
 matrix.detectObject = function(classifier, opts, cb){
 	opts = opts || {}
 
-  cv._detectObjectClassifiers = cv._detectObjectClassifiers || {}
+  	cv._detectObjectClassifiers = cv._detectObjectClassifiers || {}
 
-  if (cv._detectObjectClassifiers[classifier]){
-    var face_cascade = cv._detectObjectClassifiers[classifier];
-  } else{
-	var face_cascade = new cv.CascadeClassifier(classifier);
-    cv._detectObjectClassifiers[classifier] = face_cascade;
-  }
+  	if (cv._detectObjectClassifiers[classifier]){
+    	var face_cascade = cv._detectObjectClassifiers[classifier];
+  	} else{
+		var face_cascade = new cv.CascadeClassifier(classifier);
+    	cv._detectObjectClassifiers[classifier] = face_cascade;
+  	}
 
 	face_cascade.detectMultiScale(this, cb, opts.scale, opts.neighbors
 		, opts.min && opts.min[0], opts.min && opts.min[1]);
@@ -36,9 +36,7 @@ matrix.detectObject = function(classifier, opts, cb){
 
 matrix.inspect = function(){
 	var size = this.size() ? (this.size()[0] + 'x' + this.size()[1]) : '';
-
 	return "[Matrix " + size + " ]";
-
 }
 
 cv.LBP_FRONTALFACE_CASCADE = path.resolve(__dirname, '../../assets/data/lbpcascade_frontalface.xml')

@@ -1,7 +1,7 @@
 #include "FaceRecognizer.h"
 #include "OpenCV.h"
 
-#if CV_MAJOR_VERSION >= 2 && CV_MINOR_VERSION >=4
+#if CV_MAJOR_VERSION >= 2 && CV_MINOR_VERSION >= 4
 
 #include "Matrix.h"
 
@@ -55,6 +55,7 @@ Handle<Value> FaceRecognizerWrap::New(const Arguments &args) {
   	if (args.This()->InternalFieldCount() == 0)
     	JSTHROW_TYPE("Cannot Instantiate without new")
 
+  	// TODO: check if args is empty then,
   	// By default initialize LBPH
   	cv::Ptr<cv::FaceRecognizer> f = cv::createLBPHFaceRecognizer(1, 8, 8, 8, 80.0);
   	FaceRecognizerWrap *pt = new FaceRecognizerWrap(f, LBPH);
