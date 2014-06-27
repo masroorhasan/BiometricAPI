@@ -23,21 +23,25 @@ var ImageController = {
 	
 
         var base64Data = imageData.replace(/^data:image\/png;base64,/, "");
-	console.log("base64: " + imageData);
-	console.log("image: " + imageName);
-	console.log("dirname: " + __dirname);
-        require("fs").writeFile("../../mona2.png", base64Data, 'base64', function(err) {
+    	// console.log("base64: " + imageData);
+    	console.log("image: " + imageName);
+    	// console.log("dirname: " + __dirname);
+    
+        var imgpath = path.resolve(__dirname, '../../assets/images/sample/test.png');
+        console.log(imgpath);
+
+        require("fs").writeFileSync(imgpath, base64Data, 'base64', function(err) {
             console.log(err);
         });
 
-        cv.readImage(path.resolve(__dirname, '../../mona2.png'), function(err, im) {
+        cv.readImage(imgpath, function(err, im) {
             im.detectObject(cv.FACE_CASCADE, {}, function(err, faces) {
                 for (var i = 0; i < faces.length; i++) {
                     console.log(faces[i]);
                     var coord = faces[i];
                     im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
                 }
-                im.save(path.resolve(__dirname, '../../assets/images/out2.png'));
+                im.save(path.resolve(__dirname, '../../assets/images/out/test.png'));
             });
         });
 
