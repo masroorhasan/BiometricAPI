@@ -52,8 +52,8 @@ extern "C"
 Handle<Value> FaceRecognizerWrap::New(const Arguments &args) {
   	HandleScope scope;
 
-  	if (args.This()->InternalFieldCount() == 0)
-    	JSTHROW_TYPE("Cannot Instantiate without new")
+    if (args.This()->InternalFieldCount() == 0)
+        JSTHROW_TYPE("Cannot Instantiate without new")
 
   	// TODO: check if args is empty then,
   	// By default initialize LBPH
@@ -74,23 +74,23 @@ extern "C"
 Handle<Value> FaceRecognizerWrap::CreateLBPH(const Arguments &args) {
 	HandleScope scope;
 
-	int radius = 1;
-  	int neighbors = 8;
-  	int grid_x = 8;
-  	int grid_y = 8;
-  	double threshold = 80.0;
+    int radius = 1;
+    int neighbors = 8;
+    int grid_x = 8;
+    int grid_y = 8;
+    double threshold = 80.0;
 
-  	INT_FROM_ARGS(radius, 0)
-  	INT_FROM_ARGS(neighbors, 1)
-  	INT_FROM_ARGS(grid_x, 2)
-  	INT_FROM_ARGS(grid_y, 3)
-  	DOUBLE_FROM_ARGS(threshold, 4)
+    INT_FROM_ARGS(radius, 0)
+    INT_FROM_ARGS(neighbors, 1)
+    INT_FROM_ARGS(grid_x, 2)
+    INT_FROM_ARGS(grid_y, 3)
+    DOUBLE_FROM_ARGS(threshold, 4)
 
   	// Initialize LBPH
   	Local<Object> n = FaceRecognizerWrap::constructor->GetFunction()->NewInstance();
   	cv::Ptr<cv::FaceRecognizer> f = cv::createLBPHFaceRecognizer(radius, neighbors, grid_x, grid_y, threshold);
 
-	FaceRecognizerWrap *pt = new FaceRecognizerWrap(f, LBPH);
+	  FaceRecognizerWrap *pt = new FaceRecognizerWrap(f, LBPH);
 
   	pt->Wrap(n);
   	return n;
@@ -171,10 +171,10 @@ Handle<Value> UnwrapTrainingData(const Arguments& args, cv::vector<cv::Mat> *ima
 
 extern "C"
 Handle<Value> FaceRecognizerWrap::TrainSync(const Arguments &args) {
-	HandleScope scope;
-	FaceRecognizerWrap *self = ObjectWrap::Unwrap<FaceRecognizerWrap>(args.This());
+    HandleScope scope;
+    FaceRecognizerWrap *self = ObjectWrap::Unwrap<FaceRecognizerWrap>(args.This());
 
-	cv::vector<cv::Mat> images;
+	  cv::vector<cv::Mat> images;
   	cv::vector<int> labels;
 
   	Handle<Value> exception = UnwrapTrainingData(args, &images, &labels);

@@ -26,7 +26,7 @@ matrix.detectObject = function(classifier, opts, cb){
   	if (cv._detectObjectClassifiers[classifier]){
     	var face_cascade = cv._detectObjectClassifiers[classifier];
   	} else{
-		var face_cascade = new cv.CascadeClassifier(classifier);
+		  var face_cascade = new cv.CascadeClassifier(classifier);
     	cv._detectObjectClassifiers[classifier] = face_cascade;
   	}
 
@@ -38,6 +38,8 @@ matrix.inspect = function(){
 	var size = this.size() ? (this.size()[0] + 'x' + this.size()[1]) : '';
 	return "[Matrix " + size + " ]";
 }
+
+
 
 cv.LBP_FRONTALFACE_CASCADE = path.resolve(__dirname, '../../assets/data/lbpcascade_frontalface.xml')
 cv.HAAR_FRONTALFACE_CASCADE = path.resolve(__dirname, '../../assets/data/haarcascade_frontalface_alt.xml')
