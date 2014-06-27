@@ -5,11 +5,47 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-module.exports = {
+var ImageController = {
 
-	main: function (req, res) {
-		res.view();
-	}
+    main: function(req, res) {
+        res.view();
+    },
+
+    test: function(req, res) {
+	res.view();
+    },
+
+    create: function(req, res) {
+        var path = require('path');
+        var cv = CVService.cv;
+	var imageData = req.param("imageData");
+	var imageName = req.param("imageName");
 	
+
+        var base64Data = imageData.replace(/^data:image\/png;base64,/, "");
+	console.log("base64: " + imageData);
+	console.log("image: " + imageName);
+	console.log("dirname: " + __dirname);
+        require("fs").writeFile("../../mona2.png", base64Data, 'base64', function(err) {
+            console.log(err);
+        });
+
+        cv.readImage(path.resolve(__dirname, '../../mona2.png'), function(err, im) {
+            im.detectObject(cv.FACE_CASCADE, {}, function(err, faces) {
+                for (var i = 0; i < faces.length; i++) {
+                    console.log(faces[i]);
+                    var coord = faces[i];
+                    im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
+                }
+                im.save(path.resolve(__dirname, '../../assets/images/out2.png'));
+            });
+        });
+
+        res.send("detecting...");
+        return;
+
+    }
+
 };
 
+module.exports = ImageController;

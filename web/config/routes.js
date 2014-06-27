@@ -33,6 +33,10 @@ module.exports.routes = {
 
 
   // Custom routes here...
+  'post /image' : {
+	controller: 'image',
+	action: 'create'
+  }
 
 
   // If a request to a URL doesn't match any of the custom routes above,
