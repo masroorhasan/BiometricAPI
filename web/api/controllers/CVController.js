@@ -15,8 +15,26 @@ module.exports = {
   init: function (req, res) {
       var asset = require('assert');
       var fs = require('fs');
-      
-      // res.send(CVService.cv.readImage());
+      var path = require('path');
+
+      var cv = CVService.cv;
+      var trainingData = [];
+
+      for (var i = 1; i< 41; i++){
+          for (var j = 1; j<11; j++){
+            var filepath = "../../assets/facerec/facedb/att_faces/s" + i + "/" + j + ".pgm";
+            path.resolve(__dirname, filepath);
+            trainingData.push([i, path.resolve(__dirname, filepath) ]);
+          }
+      }
+
+      var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
+
+      console.log("training...");
+      facerec.trainSync(trainingData);
+      console.log("done training");
+      facerec.saveSync(path.resolve(__dirname, "../../assets/facerec/eigenfaces.yml"));
+
       res.send("CV API");
       return;
   },
@@ -41,6 +59,28 @@ module.exports = {
   },
 
   recognize: function(req, res) {
+      var path = require('path');
+      var cv = CVService.cv;
+
+      var trainingData = [];
+
+      for (var i = 1; i< 41; i++){
+          for (var j = 1; j<11; j++){
+            var filepath = "../../assets/facerec/facedb/att_faces/s" + i + "/" + j + ".pgm";
+            path.resolve(__dirname, filepath);
+            trainingData.push([i, path.resolve(__dirname, filepath) ]);
+          }
+      }
+
+      cv.readImage("/Users/masroorhasan/Downloads/att_faces/s10/10.pgm", function(e, im){
+          var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
+          console.log("training...");
+          facerec.trainSync(trainingData);
+          console.log("done training");
+          // facerec.loadSync(path.resolve(__dirname, "../../assets/facerec/eigenfaces.yml"));
+        
+          console.log(facerec.predictSync(im));
+      });
 
       res.send("recognize");
       return;
