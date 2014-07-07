@@ -110,3 +110,7 @@ npm-debug.log
 
 *~
 *#
+
+# sample images and output
+images/sample/
+images/out/
