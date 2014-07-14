@@ -37,7 +37,7 @@ void Matrix::Init(Handle<Object> target) {
 
 	NODE_SET_PROTOTYPE_METHOD(constructor, "save", Matrix::Save);
 	// NODE_SET_PROTOTYPE_METHOD(constructor, "saveAsync", Matrix::SaveAsync);
-
+	NODE_SET_PROTOTYPE_METHOD(constructor, "preprocess", Matrix::PreProcess);
 
 	target->Set(String::NewSymbol("Matrix"), m->GetFunction());
 }
@@ -263,6 +263,18 @@ Handle<Value> Matrix::Ellipse(const v8::Arguments& args){
 			thickness = args[5]->IntegerValue();
 	}
 
+	cv::Mat gray;
+	// cvtColor(self->mat, self->mat, CV_BGR2GRAY);
+
+	// int w = x + width/2;
+	// int h = y + height/2;
+
+	// cv::Mat im2(w, h, CV_8UC1, cv::Scalar(0,0,0));
+	// cv::ellipse(im2, cv::Point(x-width,y-height), cv::Size(width, height), 0, 0, 360, cv::Scalar(255,255,255), -1, 8);
+	// cv::imshow("im2", im2);
+
+	cv::Mat res;
+	
 	cv::ellipse(self->mat, cv::Point(x, y), cv::Size(width, height), angle, startAngle, endAngle, color, thickness, lineType, shift);
 	return scope.Close(v8::Null());
 }
@@ -372,4 +384,14 @@ void Matrix::AfterSaveAsync(uv_work_t *req) {
   baton->cb.Dispose();
 
   delete baton;
+}
+
+extern "C" 
+Handle<Value> Matrix::PreProcess(const v8::Arguments& args) {
+	HandleScope scope;
+	Matrix *self = ObjectWrap::Unwrap<Matrix>(args.This());
+
+	//Preprocessing before adding to training set
+
+	return scope.Close(v8::Null());
 }

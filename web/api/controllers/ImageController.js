@@ -64,14 +64,13 @@ var ImageController = {
                                     var coord = faces[i];
                                     im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
                                 }
-				var out = path.resolve(__dirname, '../../assets/images/out/');
-				out += "/" + model.imageName + "-" + model.id + ".png";
+				                var out = path.resolve(__dirname, '../../assets/images/out/');
+				                out += "/" + model.imageName + "-" + model.id + ".png";
                                 im.save(out);
                             });
                         });
                     }
                 });
-
             }
 
         });

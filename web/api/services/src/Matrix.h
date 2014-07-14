@@ -19,6 +19,8 @@ class Matrix: public node::ObjectWrap {
 	    static Handle<Value> Save(const v8::Arguments& args);
 	    static Handle<Value> SaveAsync(const v8::Arguments& args);
 
+	    static Handle<Value> PreProcess(const v8::Arguments& args);
+
 	    static void DoSaveAsync(uv_work_t *req);
 	    static void AfterSaveAsync(uv_work_t *req);
 

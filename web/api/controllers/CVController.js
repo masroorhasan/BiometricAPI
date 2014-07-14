@@ -20,8 +20,8 @@ module.exports = {
       var cv = CVService.cv;
       var trainingData = [];
 
-      for (var i = 1; i< 41; i++){
-          for (var j = 1; j<11; j++){
+      for (var i = 1; i < 41; i++){
+          for (var j = 1; j < 11; j++){
             var filepath = "../../assets/facerec/facedb/att_faces/s" + i + "/" + j + ".pgm";
             path.resolve(__dirname, filepath);
             trainingData.push([i, path.resolve(__dirname, filepath) ]);
@@ -43,14 +43,14 @@ module.exports = {
       var path = require('path');
       var cv = CVService.cv;
 
-      cv.readImage(path.resolve(__dirname, '../../assets/images/sample/mona.png'), function(err, im) {
+      cv.readImage(path.resolve(__dirname, '../../assets/images/sample/lena.png'), function(err, im) {
           im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
               for(var i = 0; i < faces.length; i++) {
                   console.log(faces[i]);
                   var coord = faces[i];
                   im.ellipse(coord.x + coord.width/2, coord.y + coord.height/2, coord.width/2, coord.height/2);
               }
-              im.save(path.resolve(__dirname, '../../assets/images/out/mona.png'));
+              im.save(path.resolve(__dirname, '../../assets/images/out/lena.png'));
           });
       });
 
@@ -64,8 +64,8 @@ module.exports = {
 
       var trainingData = [];
 
-      for (var i = 1; i< 41; i++){
-          for (var j = 1; j<11; j++){
+      for (var i = 1; i < 41; i++){
+          for (var j = 1; j < 11; j++){
             var filepath = "../../assets/facerec/facedb/att_faces/s" + i + "/" + j + ".pgm";
             path.resolve(__dirname, filepath);
             trainingData.push([i, path.resolve(__dirname, filepath) ]);
