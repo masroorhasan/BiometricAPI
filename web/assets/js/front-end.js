@@ -10,12 +10,23 @@ var SailsCollection = Backbone.Collection.extend({
         }
         if (typeof this.sailsCollection === "string" && this.sailsCollection !== "") {
             this.socket = io.connect();
-            this.socket.on("connect", _.bind(function() {
-                this.socket.request("/" + this.sailsCollection, where, _.bind(function(images) {
+            //this.socket.on("connect", _.bind(function() {
+                /*this.socket.request("/" + this.sailsCollection, where, _.bind(function(images) {
                     this.set(images);
+                }, this));*/
+
+		console.log("connect");
+                this.socket.on("captureImage", _.bind(function(res) {
+                    console.log('socket: captureImage');
+                    this.trigger('captureImage', res);
                 }, this));
 
-                this.socket.on("image", _.bind(function(res) {
+                this.socket.on("preFlag", _.bind(function(res) {
+                    console.log('socket: preFlag');
+                    this.trigger('preFlag', res);
+                }, this));
+
+                /*this.socket.on("image", _.bind(function(res) {
                     if (res.verb === "created") {
                         this.add(res.data);
                     } else if (res.verb === "updated") {
@@ -23,8 +34,8 @@ var SailsCollection = Backbone.Collection.extend({
                     } else if (res.verb === "destroyed") {
                         this.remove(this.get(res.data.id));
                     }
-                }, this));
-            }, this));
+                }, this));*/
+            //}, this));
         } else {
             console.log("Error: Cannot retrieve models because property 'sailsCollection' not set on the collection");
         }
@@ -46,26 +57,28 @@ var ImageView = Backbone.View.extend({
     el: '#image-container',
     events: {
         "click button.startCapture": "startCapture",
-    	"click button.stopCapture" : "stopCapture"
+        "click button.stopCapture": "stopCapture"
     },
-    initialize: function() {
-        this.collection.on('add', this.render, this);
+    initialize: function(options) {
+        this.listenTo(this.collection, 'add', this.render);
+        this.listenTo(this.collection, 'captureImage', this.captureImage);
+        this.listenTo(this.collection, 'preFlag', this.preFlag);
         this.render();
-	this.setup();
-	setTimeout(_.bind(this.startCapture, this), 5000);
+        this.setup();
     },
     template: _.template("<div class='image'>ID: <%= id %> <div id='canvasHolder'></div><input id='imageToForm'/><img id='preview'/><img src='data:image/png;base64,<%= imageData %>' style='width:640px;min-height:480px;'></img></div>"),
     render: function() {
-	this.$el.find("div.image").remove();
+        this.$el.find("div.image").remove();
 
         this.collection.each(function(image) {
             image = image.toJSON();
             image.imageData = image.imageData.replace(/^data:image\/png;base64,/, "");
 
             this.$el.append(this.template(image));
-        }, this)
+        }, this);
     },
-    captureImage: function() {
+    captureImage: function(res) {
+        console.log('captureImage');
         var canvas = this.$el.find("canvas#hiddenCanvas");
         var ctx = canvas[0].getContext('2d');
         //canvas.width = this.video.videoWidth / 4;
@@ -80,6 +93,11 @@ var ImageView = Backbone.View.extend({
             imageName: 'boop'
         });
     },
+    preFlag: function(res) {
+        console.log('preFlag');
+        alert("You have not taken a good picture in awhile. Please look at the camera and click capture when you are facing the camera");
+        this.$el.show();
+    },
     setup: function() {
         navigator.myGetMedia = (navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
@@ -93,15 +111,19 @@ var ImageView = Backbone.View.extend({
         var video = this.$el.find("video")[0];
         video.src = window.URL ? window.URL.createObjectURL(stream) : stream;
         video.play();
+        //setTimeout(_.bind(this.startCapture, this), 5000);
     },
     error: function(e) {
         console.log(e);
     },
     startCapture: function() {
-	this.timer = setInterval(_.bind(this.captureImage, this), 5000);
+        //this.timer = setInterval(_.bind(this.captureImage, this), 5000);
+        console.log('startCapture');
+        this.captureImage();
+        this.$el.hide();
     },
     stopCapture: function() {
-	window.clearInterval(this.timer);
+        window.clearInterval(this.timer);
     }
 
 
@@ -114,13 +136,13 @@ var ImagesCollection = SailsCollection.extend({
 
 $(function() {
     var images = new ImagesCollection();
-    //images.fetch();
+    images.fetch();
 
     var iView = new ImageView({
         collection: images
     });
 
-    images.fetch();
+    //images.fetch();
 
 });
 
@@ -134,7 +156,7 @@ $(function() {
 function convertImgToBase64(url, callback, outputFormat) {
     var canvas = document.createElement('CANVAS'),
         ctx = canvas.getContext('2d'),
-        img = new Image;
+        img = new Image();
     img.crossOrigin = 'Anonymous';
     img.onload = function() {
         var dataURL;

@@ -25,11 +25,8 @@ var ImageController = {
 
 
         image.imageData = image.imageData.replace(/^data:image\/png;base64,/, "");
-        // console.log("base64: " + imageData);
-        console.log("image: " + image.imageName);
-        // console.log("dirname: " + __dirname);
+        console.log("image.imageName: " + image.imageName);
 
-        // console.log(Image);
         Image.create(image).exec(function(err, model) {
 
             if (err) {
@@ -37,10 +34,8 @@ var ImageController = {
                 res.send("Error: Shit went wrong");
             } else {
 
-                // console.log(model);
                 var imgpath = path.resolve(__dirname, '../../assets/images/sample/');
                 imgpath += "/" + model.imageName + "-" + model.id + ".png";
-                // console.log(imgpath);
 
                 model.file = imgpath;
                 model.save(function(err) {
