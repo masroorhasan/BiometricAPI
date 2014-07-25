@@ -125,9 +125,18 @@ void CascadeClassifierWrap::AsyncDetectMultiScale(uv_work_t *req) {
       cvtColor(baton->im->mat, gray, CV_BGR2GRAY);
 
   //TODO: shrink camera image before equalizing
+  int detection_width = 320;
+  cv::Mat smallImg;
+  float scale = gray.cols / (float)detection_width;
+  if(gray.cols > detection_width) {
+      int scaledHeight = cvRound(gray.rows / scale);
+      cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
+  } else {
+      smallImg = gray;
+  }
 
-  equalizeHist( gray, gray);
-  baton->cc->cc.detectMultiScale(gray, objects, baton->scale, baton->neighbors, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(baton->minw, baton->minh));
+  equalizeHist( smallImg, smallImg);
+  baton->cc->cc.detectMultiScale(smallImg, objects, baton->scale, baton->neighbors, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(baton->minw, baton->minh));
   
   baton->res = objects;
 

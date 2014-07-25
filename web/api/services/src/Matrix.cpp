@@ -307,6 +307,13 @@ Handle<Value> Matrix::Rectangle(const Arguments& args) {
 		if(args[3]->IntegerValue())
 			thickness = args[3]->IntegerValue();
 
+
+		cv::Size size(width, height);
+		cv::Point2f pt(x+(width/2), y+(height/2));
+		cv::Mat dst;
+		cv::getRectSubPix(self->mat, size, pt, dst, CV_8U);
+		cv::imshow("dst", dst);
+
 		cv::rectangle(self->mat, cv::Point(x, y), cv::Point(x+width, y+height), color, thickness);
 	}
 
@@ -392,6 +399,41 @@ Handle<Value> Matrix::PreProcess(const v8::Arguments& args) {
 	Matrix *self = ObjectWrap::Unwrap<Matrix>(args.This());
 
 	//Preprocessing before adding to training set
+	if(args[0]->IsArray() && args[1]->IsArray()) {
+		Local<Object> xy = args[0]->ToObject();
+		Local<Object> width_height = args[1]->ToObject();
+
+		int x = xy->Get(0)->IntegerValue();
+		int y = xy->Get(1)->IntegerValue();
+
+		int width = width_height->Get(0)->IntegerValue();
+		int height = width_height->Get(1)->IntegerValue();
+
+		cv::Mat gray;
+		if(self->mat.channels() != 1)
+			cvtColor(self->mat, gray, CV_BGR2GRAY);
+
+		int detection_width = 320;
+		int detection_height = 320;
+		cv::Mat smallImg;
+		float scale = gray.cols / (float)detection_width;
+		// if(gray.cols > detection_width) {
+			int scaledHeight = cvRound(gray.rows / scale);
+			// cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
+			cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
+		// } else {
+		// 	smallImg = gray;
+		// }
+
+		equalizeHist(smallImg, smallImg);
+
+		cv::Size size(width, height);
+		cv::Point2f pt( (x+(width/2)), (y+(height/2)));
+		cv::Mat dst;
+		cv::getRectSubPix(smallImg, size, pt, dst, CV_8U);
+
+		self->mat = dst;
+	}
 
 	return scope.Close(v8::Null());
 }

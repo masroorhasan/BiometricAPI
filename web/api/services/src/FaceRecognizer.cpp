@@ -193,22 +193,22 @@ Handle<Value> FaceRecognizerWrap::UpdateSync(const Arguments &args) {
 
 	if (self->typ == EIGEN){
 	    JSTHROW("Eigen Recognizer does not support update")
-  	}
+	}
   	
-  	if (self->typ == FISHER){
+	if (self->typ == FISHER){
 	    JSTHROW("Fisher Recognizer does not support update")
 	}
 
 	cv::vector<cv::Mat> images;
-  	cv::vector<int> labels;
+	cv::vector<int> labels;
 
-  	Handle<Value> exception = UnwrapTrainingData(args, &images, &labels);
+	Handle<Value> exception = UnwrapTrainingData(args, &images, &labels);
 
-  	if(!exception->IsUndefined())
-  		return exception;
+	if(!exception->IsUndefined())
+      return exception;
 
-  	self->rec->update(images, labels);
-  	return scope.Close(v8::Undefined());
+	self->rec->update(images, labels);
+	return scope.Close(v8::Undefined());
 }
 
 extern "C"

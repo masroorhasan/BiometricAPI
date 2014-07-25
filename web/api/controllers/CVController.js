@@ -48,9 +48,11 @@ module.exports = {
               for(var i = 0; i < faces.length; i++) {
                   console.log(faces[i]);
                   var coord = faces[i];
-                  im.ellipse(coord.x + coord.width/2, coord.y + coord.height/2, coord.width/2, coord.height/2);
+                  // im.ellipse(coord.x + coord.width/2, coord.y + coord.height/2, coord.width/2, coord.height/2);
+                  // im.rectangle([coord.x, coord.y], [coord.width, coord.height]);
+                  im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
               }
-              im.save(path.resolve(__dirname, '../../assets/images/out/lena.png'));
+              im.save(path.resolve(__dirname, '../../assets/images/out/lena.pgm'));
           });
       });
 
@@ -65,14 +67,13 @@ module.exports = {
       var trainingData = [];
 
       for (var i = 1; i < 41; i++){
-          for (var j = 1; j < 11; j++){
+          for (var j = 1; j < 10; j++){
             var filepath = "../../assets/facerec/facedb/att_faces/s" + i + "/" + j + ".pgm";
-            path.resolve(__dirname, filepath);
             trainingData.push([i, path.resolve(__dirname, filepath) ]);
           }
       }
 
-      cv.readImage("/Users/masroorhasan/Downloads/att_faces/s10/10.pgm", function(e, im){
+      cv.readImage("/Users/masroorhasan/Downloads/att_faces/s6/9.pgm", function(e, im){
           var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
           console.log("training...");
           facerec.trainSync(trainingData);
