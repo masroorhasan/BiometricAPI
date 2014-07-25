@@ -29,7 +29,7 @@ var ImageController = {
         console.log("image: " + image.imageName);
         // console.log("dirname: " + __dirname);
 
-        console.log(Image);
+        // console.log(Image);
         Image.create(image).exec(function(err, model) {
 
             if (err) {
@@ -37,10 +37,10 @@ var ImageController = {
                 res.send("Error: Shit went wrong");
             } else {
 
-                console.log(model);
+                // console.log(model);
                 var imgpath = path.resolve(__dirname, '../../assets/images/sample/');
                 imgpath += "/" + model.imageName + "-" + model.id + ".png";
-                console.log(imgpath);
+                // console.log(imgpath);
 
                 model.file = imgpath;
                 model.save(function(err) {
@@ -58,20 +58,21 @@ var ImageController = {
                         console.log(err);
                     } else {
                         cv.readImage(model.file, function(err, im) {
-                            im.detectObject(cv.FACE_CASCADE, {}, function(err, faces) {
+                            im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
                                 for (var i = 0; i < faces.length; i++) {
                                     console.log(faces[i]);
                                     var coord = faces[i];
-                                    im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
+                                    // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
+                                    im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
                                 }
-				var out = path.resolve(__dirname, '../../assets/images/out/');
-				out += "/" + model.imageName + "-" + model.id + ".png";
+				                var out = path.resolve(__dirname, '../../assets/images/out/');
+				                // out += "/" + model.imageName + "-" + model.id + ".pgm";
+                                out += "/" + model.id + ".png";
                                 im.save(out);
                             });
                         });
                     }
                 });
-
             }
 
         });
