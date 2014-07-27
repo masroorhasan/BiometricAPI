@@ -131,7 +131,7 @@ Handle<Value> Matrix::Pixel(const Arguments& args) {
 		self->mat.at<cv::Vec3b>(y, x)[1] =  (uchar) objColor->Get(1)->IntegerValue();
 		self->mat.at<cv::Vec3b>(y, x)[2] =  (uchar) objColor->Get(2)->IntegerValue();
 		return scope.Close(args[2]->ToObject());
-	}else{
+	} else {
 		cv::Vec3b intensity = self->mat.at<cv::Vec3b>(y, x);
 
 		v8::Local<v8::Array> arr = v8::Array::New(3);
@@ -262,18 +262,6 @@ Handle<Value> Matrix::Ellipse(const v8::Arguments& args){
 		if(args[5]->IntegerValue())
 			thickness = args[5]->IntegerValue();
 	}
-
-	cv::Mat gray;
-	// cvtColor(self->mat, self->mat, CV_BGR2GRAY);
-
-	// int w = x + width/2;
-	// int h = y + height/2;
-
-	// cv::Mat im2(w, h, CV_8UC1, cv::Scalar(0,0,0));
-	// cv::ellipse(im2, cv::Point(x-width,y-height), cv::Size(width, height), 0, 0, 360, cv::Scalar(255,255,255), -1, 8);
-	// cv::imshow("im2", im2);
-
-	cv::Mat res;
 	
 	cv::ellipse(self->mat, cv::Point(x, y), cv::Size(width, height), angle, startAngle, endAngle, color, thickness, lineType, shift);
 	return scope.Close(v8::Null());
@@ -409,30 +397,37 @@ Handle<Value> Matrix::PreProcess(const v8::Arguments& args) {
 		int width = width_height->Get(0)->IntegerValue();
 		int height = width_height->Get(1)->IntegerValue();
 
+		// grayscale out img
 		cv::Mat gray;
 		if(self->mat.channels() != 1)
 			cvtColor(self->mat, gray, CV_BGR2GRAY);
 
+		// apply resizing
 		int detection_width = 320;
-		int detection_height = 320;
 		cv::Mat smallImg;
 		float scale = gray.cols / (float)detection_width;
-		// if(gray.cols > detection_width) {
-			int scaledHeight = cvRound(gray.rows / scale);
-			// cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
-			cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
-		// } else {
-		// 	smallImg = gray;
-		// }
+		
+		int scaledHeight = cvRound(gray.rows / scale);
+		cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
 
+		// apply histogram
 		equalizeHist(smallImg, smallImg);
 
+		// crop the face out the processesed img
 		cv::Size size(width, height);
 		cv::Point2f pt( (x+(width/2)), (y+(height/2)));
 		cv::Mat dst;
 		cv::getRectSubPix(smallImg, size, pt, dst, CV_8U);
 
-		self->mat = dst;
+		// shrink img to standard size
+		int reszied_w = 125;
+		int resized_h = 125;
+
+		cv::Mat resized;
+		cv::resize(dst, resized, cv::Size(reszied_w, resized_h));
+
+
+		self->mat = resized;
 	}
 
 	return scope.Close(v8::Null());

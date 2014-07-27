@@ -60,10 +60,14 @@ var ImageController = {
                                     // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
                                     im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
                                 }
-				                var out = path.resolve(__dirname, '../../assets/images/out/');
-				                // out += "/" + model.imageName + "-" + model.id + ".pgm";
-                                out += "/" + model.id + ".png";
-                                im.save(out);
+
+				                var out_pgm = path.resolve(__dirname, '../../assets/images/out/');
+                                out_pgm += "/" + model.id + ".pgm";
+                                im.save(out_pgm);
+
+                                var out_png = path.resolve(__dirname, '../../assets/images/out/');
+                                out_png += "/" + model.id + ".png";
+                                im.save(out_png);
                             });
                         });
                     }
@@ -72,11 +76,7 @@ var ImageController = {
 
         });
 
-
-
-
         res.send("detecting...");
-
     }
 
 };
