@@ -33,8 +33,6 @@ module.exports.sockets = {
             clearInterval(noRes);
         });
 
-
-
         socket.on('badImage', function(res) {
             // preFlag after 4 consecutive bad images
             if (++badCount >= 4) {

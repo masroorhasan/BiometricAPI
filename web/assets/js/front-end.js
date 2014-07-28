@@ -90,7 +90,7 @@ var ImageView = Backbone.View.extend({
 	this.captureImage();
 	this.collection.clearFlag();
         this.$el.find("#note").hide();
-        this.$el.hide();
+        this.$el.removeClass("large");
     },
     captureImage: function(res) {
         console.log('captureImage');
@@ -112,7 +112,7 @@ var ImageView = Backbone.View.extend({
     preFlag: function(res) {
         console.log('preFlag');
         this.$el.find('#note').html("You have not taken a good picture in awhile. Please look at the camera and click capture when you are facing the camera").show();
-        this.$el.show();
+        this.$el.addClass("large");
     },
     setup: function() {
         navigator.myGetMedia = (navigator.getUserMedia ||
