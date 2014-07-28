@@ -67,26 +67,30 @@ var ImageController = {
 				                    goodImage = goodImage || coord.x > -1;
                                     console.log(goodImage);
                                     // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
-                                    im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
+                                    if(coord.x > -1) {
+                                        im.preprocess([coord.x, coord.y], [coord.width, coord.height]);    
+                                    }
                                 }
+
                 				if(!goodImage) {
 
                 					//io.sockets.in('room-' + socket.id).emit('badImage', {});
-							ImageService.badImage(req.socket);
-							console.log('socket id img: ' + socket.id);
+        							ImageService.badImage(req.socket);
+        							console.log('socket id img: ' + socket.id);
                 				} else {
-							//io.sockets.in('room-' + socket.id).emit('goodImage', {});
-							ImageService.goodImage(req.socket);
-							console.log('socket id img: ' + socket.id);
-						}
+        							
+                                    //io.sockets.in('room-' + socket.id).emit('goodImage', {});
+        							ImageService.goodImage(req.socket);
+        							console.log('socket id img: ' + socket.id);
 
-				                var out_pgm = path.resolve(__dirname, '../../assets/images/out/');
-                                out_pgm += "/" + model.id + ".pgm";
-                                im.save(out_pgm);
+                                    var out_pgm = path.resolve(__dirname, '../../assets/images/out/');
+                                    out_pgm += "/" + model.id + ".pgm";
+                                    im.save(out_pgm);
 
-                                var out_png = path.resolve(__dirname, '../../assets/images/out/');
-                                out_png += "/" + model.id + ".png";
-                                im.save(out_png);
+                                    var out_png = path.resolve(__dirname, '../../assets/images/out/');
+                                    out_png += "/" + model.id + ".png";
+                                    im.save(out_png);
+					           }
 
                             });
                         });
