@@ -24,6 +24,10 @@ var SailsCollection = Backbone.Collection.extend({
                 this.trigger('preFlag', res);
             }, this));
 
+	    fydp.socket.on("badImage", function(res) {
+		    console.log("badImage");
+	    });
+
         } else {
             console.log("Error: Cannot retrieve models because property 'sailsCollection' not set on the collection");
         }
@@ -61,7 +65,7 @@ var ImageModel = Backbone.Model.extend({
     sync: function(method, model, options) {
         if(method == 'create') {
             if (fydp.socket) {
-                fydp.socket.post(model.url, model);
+                fydp.socket.post(model.url(), model);
             } else {
                 console.log("Error: socket has not been connected");
             }

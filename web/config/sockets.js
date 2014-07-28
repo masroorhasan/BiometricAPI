@@ -17,50 +17,46 @@ module.exports.sockets = {
     // Keep in mind that Sails' RESTful simulation for sockets
     // mixes in socket.io events for your routes and blueprints automatically.
     onConnect: function(session, socket) {
-    	var noRes;
+        var noRes;
+        var badCount = 0;
+
         var preFlag = function(sess, sock) {
-        	console.log('preFlag');
-            sock.emit('preFlag', {});
-    	    noRes = setTimer(function() {
-    		// if we reach here, we did not get a response from the
-    		// preFlag event in a timely manner. flag and continue
-    		
-    	    }, 15000);
+            sock.emit('preFlag', {}); // alert the client to show message
+            noRes = setTimer(function() {
+                // if we reach here, we did not get a response from the
+                // preFlag event in a timely manner. flag and continue
+            }, 15000);
         };
 
-        var badCount = 0;
+        socket.on('clearFlag', function(req, res) {
+            console.log('clearFlag');
+            clearInterval(noRes);
+        });
+
+
+
+        socket.on('badImage', function(res) {
+            // preFlag after 4 consecutive bad images
+            if (++badCount >= 4) {
+                preFlag(req.socket, {});
+            }
+        });
+
+        socket.on('goodImage', function(req, res) {
+            badCount = 0;
+        });
+
         var capture = function(sess, sock) {
-	        console.log('capture');
-            console.log("   socket id: " + socket.id);
-            // By default, do nothing.
+            // tell the client to take a picture every 5 secs
             var timer = setInterval(function() {
                 sock.emit('captureImage', {});
             }, 5000);
         };
 
-    	socket.on('clearFlag', function(req, res) {
-    		console.log('clearFlag');
-    		clearInterval(noRes);
-    	});
+        console.log("connected");
 
-    	socket.on('badImage', function(req, res) {
-    		// preFlag after 4 consecutive bad images
-    		console.log('badImage');
-    		if(++badCount > 3) {
-    			console.log('attempt preFlag');
-    			preFlag(req.socket, {});
-    		}
-    	});
-
-    	socket.on('goodImage', function(req, res) {
-    		console.log('goodImage');
-    		badCount = 0;
-    	});
-
-    	console.log("connected");
-        console.log("socket id: " + socket.id);
-    	capture(session, socket);
-
+        // start sending events
+        capture(session, socket);
     },
 
     // This custom onDisconnect function will be run each time a socket disconnects

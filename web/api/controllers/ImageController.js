@@ -17,6 +17,8 @@ var ImageController = {
 
     create: function(req, res) {
         var path = require('path');
+	var socket = req.socket;
+	var io = sails.io;
         var cv = CVService.cv;
         var image = {
             data: req.param("data"),
@@ -30,7 +32,6 @@ var ImageController = {
         }
 
         image.data = image.data.replace(/^data:image\/png;base64,/, "");
-        console.log("image.name: " + image.name);
 
         Image.create(image).exec(function(err, model) {
 
@@ -63,17 +64,21 @@ var ImageController = {
                                 for (var i = 0; i < faces.length; i++) {
                                     console.log("faces[" + i + "].x: " + faces[i].x);
                                     var coord = faces[i];
-				                    goodImage = goodImage || coord.x ;
+				                    goodImage = goodImage || coord.x > -1;
                                     console.log(goodImage);
                                     // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
                                     im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
                                 }
-
                 				if(!goodImage) {
-                                    console.log("emit badImage");
-                                    console.log("   img socket id: " + req.socket.id);
-                					req.socket.emit('badImage', {});
-                				}
+
+                					//io.sockets.in('room-' + socket.id).emit('badImage', {});
+							ImageService.badImage(req.socket);
+							console.log('socket id img: ' + socket.id);
+                				} else {
+							//io.sockets.in('room-' + socket.id).emit('goodImage', {});
+							ImageService.goodImage(req.socket);
+							console.log('socket id img: ' + socket.id);
+						}
 
 				                var out_pgm = path.resolve(__dirname, '../../assets/images/out/');
                                 out_pgm += "/" + model.id + ".pgm";
