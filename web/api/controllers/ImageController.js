@@ -23,6 +23,11 @@ var ImageController = {
             name: req.param("name")
         };
 
+        if(!image.data) {
+            console.log("Error: no image data");
+            res.status(200);
+            return;
+        }
 
         image.data = image.data.replace(/^data:image\/png;base64,/, "");
         console.log("image.name: " + image.name);
@@ -54,18 +59,21 @@ var ImageController = {
                     } else {
                         cv.readImage(model.file, function(err, im) {
                             im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
-				var goodImage = 0;
+				                var goodImage = false;
                                 for (var i = 0; i < faces.length; i++) {
-                                    console.log(faces[i]);
+                                    console.log("faces[" + i + "].x: " + faces[i].x);
                                     var coord = faces[i];
-				    goodImage = goodImage || coord.x ;
+				                    goodImage = goodImage || coord.x ;
+                                    console.log(goodImage);
                                     // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
                                     im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
                                 }
 
-				if(!goodImage) {
-					req.socket.emit('badImage');
-				}
+                				if(!goodImage) {
+                                    console.log("emit badImage");
+                                    console.log("   img socket id: " + req.socket.id);
+                					req.socket.emit('badImage', {});
+                				}
 
 				                var out_pgm = path.resolve(__dirname, '../../assets/images/out/');
                                 out_pgm += "/" + model.id + ".pgm";

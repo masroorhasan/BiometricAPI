@@ -1,6 +1,9 @@
+var fydp = {
+    socket: null
+};
+
 var SailsCollection = Backbone.Collection.extend({
     sailsCollection: "",
-    socket: null,
     sync: function(method, model, options) {
         var where = {};
         if (options.where) {
@@ -9,14 +12,14 @@ var SailsCollection = Backbone.Collection.extend({
             }
         }
         if (typeof this.sailsCollection === "string" && this.sailsCollection !== "") {
-            this.socket = io.connect();
+            fydp.socket = io.connect();
             console.log("connect");
-            this.socket.on("captureImage", _.bind(function(res) {
+            fydp.socket.on("captureImage", _.bind(function(res) {
                 console.log('socket: captureImage');
                 this.trigger('captureImage', res);
             }, this));
 
-            this.socket.on("preFlag", _.bind(function(res) {
+            fydp.socket.on("preFlag", _.bind(function(res) {
                 console.log('socket: preFlag');
                 this.trigger('preFlag', res);
             }, this));
@@ -27,11 +30,18 @@ var SailsCollection = Backbone.Collection.extend({
     },
     clearFlag: function() {
         if (typeof this.sailsCollection === "string" && this.sailsCollection !== "") {
-            if (this.socket) {
-                this.socket.emit('clearFlag', {});
+            if (fydp.socket) {
+                fydp.socket.emit('clearFlag', {});
             } else {
                 console.log("Error: socket has not been connected");
             }
+        } else {
+            console.log("Error: Cannot retrieve models because property 'sailsCollection' not set on the collection");
+        }
+    },
+    createImage: function(method, model, options) {
+        if (typeof this.sailsCollection === "string" && this.sailsCollection !== "") {
+            
         } else {
             console.log("Error: Cannot retrieve models because property 'sailsCollection' not set on the collection");
         }
@@ -47,6 +57,17 @@ var ImageModel = Backbone.Model.extend({
     },
     url: function() {
         return this.id ? '/image/' + this.id : '/image';
+    },
+    sync: function(method, model, options) {
+        if(method == 'create') {
+            if (fydp.socket) {
+                fydp.socket.post(model.url, model);
+            } else {
+                console.log("Error: socket has not been connected");
+            }
+        } else {
+            Backbone.sync(method, model, options);
+        }
     }
 });
 
