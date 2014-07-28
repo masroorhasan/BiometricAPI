@@ -19,13 +19,13 @@ var ImageController = {
         var path = require('path');
         var cv = CVService.cv;
         var image = {
-            imageData: req.param("imageData"),
-            imageName: req.param("imageName")
+            data: req.param("data"),
+            name: req.param("name")
         };
 
 
-        image.imageData = image.imageData.replace(/^data:image\/png;base64,/, "");
-        console.log("image.imageName: " + image.imageName);
+        image.data = image.data.replace(/^data:image\/png;base64,/, "");
+        console.log("image.name: " + image.name);
 
         Image.create(image).exec(function(err, model) {
 
@@ -35,7 +35,7 @@ var ImageController = {
             } else {
 
                 var imgpath = path.resolve(__dirname, '../../assets/images/sample/');
-                imgpath += "/" + model.imageName + "-" + model.id + ".png";
+                imgpath += "/" + model.name + "-" + model.id + ".png";
 
                 model.file = imgpath;
                 model.save(function(err) {
@@ -48,18 +48,24 @@ var ImageController = {
                 });
 
                 // async write
-                require("fs").writeFile(model.file, model.imageData, 'base64', function(err) {
+                require("fs").writeFile(model.file, model.data, 'base64', function(err) {
                     if (err) {
                         console.log(err);
                     } else {
                         cv.readImage(model.file, function(err, im) {
                             im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
+				var goodImage = 0;
                                 for (var i = 0; i < faces.length; i++) {
                                     console.log(faces[i]);
                                     var coord = faces[i];
+				    goodImage = goodImage || coord.x ;
                                     // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
                                     im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
                                 }
+
+				if(!goodImage) {
+					req.socket.emit('badImage');
+				}
 
 				                var out_pgm = path.resolve(__dirname, '../../assets/images/out/');
                                 out_pgm += "/" + model.id + ".pgm";
@@ -68,6 +74,7 @@ var ImageController = {
                                 var out_png = path.resolve(__dirname, '../../assets/images/out/');
                                 out_png += "/" + model.id + ".png";
                                 im.save(out_png);
+
                             });
                         });
                     }

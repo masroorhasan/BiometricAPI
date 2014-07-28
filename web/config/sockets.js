@@ -17,25 +17,45 @@ module.exports.sockets = {
     // Keep in mind that Sails' RESTful simulation for sockets
     // mixes in socket.io events for your routes and blueprints automatically.
     onConnect: function(session, socket) {
+	var noRes;
         var preFlag = function(sess, sock) {
 	console.log('preFlag');
             sock.emit('preFlag', {});
-	    capture(sess, sock);
+	    noRes = setTimer(function() {
+		// if we reach here, we did not get a response from the
+		// preFlag event in a timely manner. flag and continue
+		
+	    }, 15000);
         };
 
+        var badCount = 0;
         var capture = function(sess, sock) {
-		console.log('capture');
-            var counter = 0;
+	    console.log('capture');
             // By default, do nothing.
             var timer = setInterval(function() {
                 sock.emit('captureImage', {});
-                if (++counter >= 3) {
-                    clearInterval(timer);
-                    preFlag(sess, sock);
-                    counter = 0;
-                }
             }, 5000);
         };
+
+	socket.on('clearFlag', function(req, res) {
+		console.log('clearFlag');
+		clearInterval(noRes);
+	});
+
+	socket.on('badImage', function(req, res) {
+		// preFlag after 4 consecutive bad images
+		console.log('badImage');
+		if(++badCount > 3) {
+			console.log('attempt preFlag');
+			preFlag(req.socket, {});
+		}
+	});
+
+	socket.on('goodImage', function(req, res) {
+		console.log('goodImage');
+		badCount = 0;
+	});
+
 	console.log("connected");
 	capture(session, socket);
 
