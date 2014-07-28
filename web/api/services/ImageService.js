@@ -23,7 +23,7 @@ module.exports = {
 
 	// if we've gotten more than 4 bad in a row
 	// send a preflag event
-	if(connections[sock.id].last_modified >= 4 && !connections[sock.id].flagging) {
+	if(connections[sock.id].counter >= 4 && !connections[sock.id].flagging) {
 		sock.emit('preFlag');
 		connections[sock.id].flagging = true;
 	}

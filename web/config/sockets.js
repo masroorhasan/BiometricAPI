@@ -20,7 +20,7 @@ module.exports.sockets = {
         var noRes;
         var badCount = 0;
 
-        var preFlag = function(sess, sock) {
+        /*var preFlag = function(sess, sock) {
             sock.emit('preFlag', {}); // alert the client to show message
             noRes = setTimer(function() {
                 // if we reach here, we did not get a response from the
@@ -42,7 +42,7 @@ module.exports.sockets = {
 
         socket.on('goodImage', function(req, res) {
             badCount = 0;
-        });
+        });*/
 
         var capture = function(sess, sock) {
             // tell the client to take a picture every 5 secs
