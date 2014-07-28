@@ -25,6 +25,7 @@ module.exports = {
 	// send a preflag event
 	if(connections[sock.id].last_modified >= 4 && !connections[sock.id].flagging) {
 		sock.emit('preFlag');
+		connections[sock.id].flagging = true;
 	}
     }
 };
