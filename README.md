@@ -1,4 +1,4 @@
 FYDP
 ====
 
-FYDP - Online payment API via face recognition
+FYDP - Facial recognition, verification and certification service for Education Platforms
