@@ -66,24 +66,29 @@ module.exports = {
 
       var trainingData = [];
 
-      for (var i = 1; i < 41; i++){
-          for (var j = 1; j < 10; j++){
-            var filepath = "../../assets/facerec/facedb/att_faces/s" + i + "/" + j + ".pgm";
+      for (var i = 1; i < 3; i++){
+          for (var j = 1; j < 7; j++){
+            var filepath = "../../assets/facerec/facedb/custom/s" + i + "/" + j + ".pgm";
             trainingData.push([i, path.resolve(__dirname, filepath) ]);
           }
       }
 
-      cv.readImage("/Users/masroorhasan/Downloads/att_faces/s6/9.pgm", function(e, im){
-          var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
-          console.log("training...");
-          facerec.trainSync(trainingData);
-          console.log("done training");
+      var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
+      console.log("training...");
+      facerec.trainSync(trainingData);
+      console.log("done training");
+      
+      var predictedImg = {};
+      // cv.readImage("/Users/masroorhasan/Downloads/att_faces/s6/9.pgm", function(e, im){
+      cv.readImage(path.resolve(__dirname, '../../assets/images/out/warren11.pgm'), function(e, im){    
           // facerec.loadSync(path.resolve(__dirname, "../../assets/facerec/eigenfaces.yml"));
-        
-          console.log(facerec.predictSync(im));
+          
+          predictedImg = facerec.predictSync(im);
+          console.log(predictedImg);
       });
 
-      res.send("recognize");
+      var resp = "recognizing...\n" + "id: " + predictedImg.id + "\nconfidence: " + predictedImg.confidence;
+      res.send(resp);
       return;
   }
 };
