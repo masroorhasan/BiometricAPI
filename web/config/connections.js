@@ -74,6 +74,27 @@ module.exports.connections = {
     user: 'YOUR_POSTGRES_USER',
     password: 'YOUR_POSTGRES_PASSWORD',
     database: 'YOUR_POSTGRES_DB'
+  },
+
+
+  // Elastic Search adapter
+  // https://www.npmjs.com/package/sails-elasticsearch
+  // elasticSearchAdapter: {
+  //   adapter: 'waterline-elasticsearch',
+  //   hosts: ['http://127.0.0.1:9200'],
+  //   keepAlive: false,
+  //   sniffOnStart: true,
+  //   maxRetries: 10,
+  //   deadTimeout: 40000,
+  //   sniffOnConnectionFault: true,
+  //   apiVersion: '1.3'
+  // }
+  elasticSearchAdapter: {
+    adapter: 'waterline-elasticsearch',
+    host: 'localhost',
+    port: 9200,
+    log: 'warning',
+    index: 'cognitech'
   }
 
 

@@ -5,6 +5,9 @@
 # OSX files
 *.DS_STORE
 
+*.pgm
+*.png
+*.yml
 
 # Build directories
 build/

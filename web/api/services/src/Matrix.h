@@ -26,3 +26,8 @@ class Matrix: public node::ObjectWrap {
 
 };
 
+/*
+- create two training sets of class and individual student
+- check if img.cols > 0, only then resize
+- lightweight db - student - session pair
+ */
