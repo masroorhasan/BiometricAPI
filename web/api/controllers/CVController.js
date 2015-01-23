@@ -7,94 +7,91 @@
 
 module.exports = {
 
-
-
   /**
    * `CVController.init()`
    */
-  init: function (req, res) {
-      var asset = require('assert');
-      var fs = require('fs');
-      var path = require('path');
+  init: function(req, res) {
+    var asset = require('assert');
+    var fs = require('fs');
+    var path = require('path');
 
-      var cv = CVService.cv;
-      var trainingData = [];
+    var cv = CVService.cv;
+    var trainingData = [];
 
-      for (var i = 1; i < 7; i++){
-          for (var j = 1; j < 4; j++){
-            var filepath = "../../assets/facerec/facedb/custom/s" + i + "/" + j + ".pgm";
-            path.resolve(__dirname, filepath);
-            trainingData.push([i, path.resolve(__dirname, filepath) ]);
-          }
+    for (var i = 1; i < 7; i++) {
+      for (var j = 1; j < 4; j++) {
+        var filepath = "../../assets/facerec/facedb/custom/s" + i + "/" + j + ".pgm";
+        path.resolve(__dirname, filepath);
+        trainingData.push([i, path.resolve(__dirname, filepath)]);
       }
+    }
 
-      var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
+    var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
 
-      console.log("training...");
-      facerec.trainSync(trainingData);
-      console.log("done training");
-      facerec.saveSync(path.resolve(__dirname, "../../assets/facerec/eigenfaces.yml"));
+    console.log("training...");
+    facerec.trainSync(trainingData);
+    console.log("done training");
+    facerec.saveSync(path.resolve(__dirname, "../../assets/facerec/eigenfaces.yml"));
 
-      res.send("CV API");
-      return;
+    res.send("CV API");
+    return;
   },
 
   detect: function(req, res) {
-      var path = require('path');
-      var cv = CVService.cv;
+    var path = require('path');
+    var cv = CVService.cv;
 
-      cv.readImage(path.resolve(__dirname, '../../assets/images/sample/lena.png'), function(err, im) {
-          im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
-              for(var i = 0; i < faces.length; i++) {
-                  console.log(faces[i]);
-                  var coord = faces[i];
-                  // im.ellipse(coord.x + coord.width/2, coord.y + coord.height/2, coord.width/2, coord.height/2);
-                  // im.rectangle([coord.x, coord.y], [coord.width, coord.height]);
-                  im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
-              }
-              im.save(path.resolve(__dirname, '../../assets/images/out/lena.pgm'));
-          });
+    cv.readImage(path.resolve(__dirname, '../../assets/images/sample/lena.png'), function(err, im) {
+      im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
+        for (var i = 0; i < faces.length; i++) {
+          console.log(faces[i]);
+          var coord = faces[i];
+          // im.ellipse(coord.x + coord.width/2, coord.y + coord.height/2, coord.width/2, coord.height/2);
+          // im.rectangle([coord.x, coord.y], [coord.width, coord.height]);
+          im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
+        }
+        im.save(path.resolve(__dirname, '../../assets/images/out/lena.pgm'));
       });
+    });
 
-      res.send("detecting...");
-      return;
+    res.send("detecting...");
+    return;
   },
 
   recognize: function(req, res) {
-      var path = require('path');
-      var cv = CVService.cv;
+    var path = require('path');
+    var cv = CVService.cv;
 
-      var trainingData = [];
+    var trainingData = [];
 
-      var numUsers = 7,
-          numImages = 4;
+    var numUsers = 7,
+      numImages = 4;
 
-      for (var i = 1; i < numUsers; i++){
-          for (var j = 1; j < numImages; j++){
-            var filepath = "../../assets/facerec/facedb/custom/s" + i + "/" + j + ".pgm";
-            trainingData.push([i, path.resolve(__dirname, filepath) ]);
-          }
+    for (var i = 1; i < numUsers; i++) {
+      for (var j = 1; j < numImages; j++) {
+        var filepath = "../../assets/facerec/facedb/custom/s" + i + "/" + j + ".pgm";
+        trainingData.push([i, path.resolve(__dirname, filepath)]);
       }
+    }
 
-      var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
-      console.log("training...");
-      facerec.trainSync(trainingData);
-      console.log("done training");
+    var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
+    console.log("training...");
+    facerec.trainSync(trainingData);
+    console.log("done training");
 
-      var imageReadPath = '../../assets/facerec/facedb/test/greg1.pgm';
+    var imageReadPath = '../../assets/facerec/facedb/test/greg1.pgm';
 
-      var predictedImg = {};
-      // cv.readImage("/Users/masroorhasan/Downloads/att_faces/s6/9.pgm", function(e, im){
-      cv.readImage(path.resolve(__dirname, imageReadPath), function(e, im){
-          // facerec.loadSync(path.resolve(__dirname, "../../assets/facerec/eigenfaces.yml"));
+    var predictedImg = {};
+    // cv.readImage("/Users/masroorhasan/Downloads/att_faces/s6/9.pgm", function(e, im){
+    cv.readImage(path.resolve(__dirname, imageReadPath), function(e, im) {
+      // facerec.loadSync(path.resolve(__dirname, "../../assets/facerec/eigenfaces.yml"));
 
-          predictedImg = facerec.predictSync(im);
-          console.log(predictedImg);
-      });
+      predictedImg = facerec.predictSync(im);
+      console.log(predictedImg);
+    });
 
-      var resp = "recognizing...\n" + "id: " + predictedImg.id + "\nconfidence: " + predictedImg.confidence;
-      res.send(resp);
-      return;
+    var resp = "recognizing...\n" + "id: " + predictedImg.id + "\nconfidence: " + predictedImg.confidence;
+    res.send(resp);
+    return;
   }
 };
-
