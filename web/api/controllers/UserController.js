@@ -16,9 +16,6 @@
  */
 
 module.exports = {
-    
-  
-
 
   /**
    * Overrides for the settings in `config/controllers.js`
@@ -26,33 +23,52 @@ module.exports = {
    */
   _config: {},
 
-  login: function (req, res) {
-	var bcrypt = require('bcrypt');
-	
-	// TODO: promise structure?
-	User.findOnebyEmail(req.body.username).done(function (err, user) {
-		if (err) res.json({ error: 'DB error' }, 500);
+  testFind: function(req, res) {
+    console.log("testFind");
+    User.find({
+      id: '',
+      username: 'greg'
+    }).exec(function(err, model) {
+      if (err) console.log(err);
+      console.log(model);
+      return res.send(model);
+    });
 
-		if (user) {
-			bcrypt.compare(req.body.password, user.password, function (err, match) {
-				if (err) res.json({ error: 'Server error' }, 500);
+    return;
+  },
 
-				if (match) {
-					// password match
-					req.session.user = user.id;
-					res.json(user);
-				} else {
-					// invalid password
-					if (req.session.user) req.session.user = null;
-					res.json({ error: 'Invalid password' }, 400);
-				}
-			});
-		} else {
-			res.json({ error: 'User not found' }, 404);
-		}
-	});
+  login: function(req, res) {
+    var bcrypt = require('bcrypt');
+
+    // TODO: promise structure?
+    User.findOnebyEmail(req.body.username).done(function(err, user) {
+      if (err) res.json({
+        error: 'DB error'
+      }, 500);
+
+      if (user) {
+        bcrypt.compare(req.body.password, user.password, function(err, match) {
+          if (err) res.json({
+            error: 'Server error'
+          }, 500);
+
+          if (match) {
+            // password match
+            req.session.user = user.id;
+            res.json(user);
+          } else {
+            // invalid password
+            if (req.session.user) req.session.user = null;
+            res.json({
+              error: 'Invalid password'
+            }, 400);
+          }
+        });
+      } else {
+        res.json({
+          error: 'User not found'
+        }, 404);
+      }
+    });
   }
-
-
-  
 };
