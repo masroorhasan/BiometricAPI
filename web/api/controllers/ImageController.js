@@ -17,8 +17,8 @@ var ImageController = {
 
     create: function(req, res) {
         var path = require('path');
-	var socket = req.socket;
-	var io = sails.io;
+    	var socket = req.socket;
+    	var io = sails.io;
         var cv = CVService.cv;
         var image = {
             data: req.param("data"),
@@ -68,7 +68,7 @@ var ImageController = {
                                     console.log(goodImage);
                                     // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
                                     if(coord.x > -1) {
-                                        im.preprocess([coord.x, coord.y], [coord.width, coord.height]);    
+                                        im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
                                     }
                                 }
 
@@ -78,7 +78,21 @@ var ImageController = {
         							ImageService.badImage(req.socket);
         							console.log('socket id img: ' + socket.id);
                 				} else {
-        							
+
+                                    var trainingData = [];
+
+                                    for (var i = 1; i < 7; i++){
+                                      for (var j = 1; j < 4; j++){
+                                        var filepath = "../../assets/facerec/facedb/custom/s" + i + "/" + j + ".pgm";
+                                        trainingData.push([i, path.resolve(__dirname, filepath) ]);
+                                      }
+                                    }
+
+                                    var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
+                                    console.log("training...");
+                                    facerec.trainSync(trainingData);
+                                    console.log("done training");
+
                                     //io.sockets.in('room-' + socket.id).emit('goodImage', {});
         							ImageService.goodImage(req.socket);
         							console.log('socket id img: ' + socket.id);
@@ -87,10 +101,11 @@ var ImageController = {
                                     out_pgm += "/" + model.id + ".pgm";
                                     im.save(out_pgm);
 
-                                    var out_png = path.resolve(__dirname, '../../assets/images/out/');
-                                    out_png += "/" + model.id + ".png";
-                                    im.save(out_png);
-					           }
+                                    var predictedImg = {};
+
+                                    predictedImg = facerec.predictSync(out_pgm);
+                                    console.log(predictedImg);
+                        }
 
                             });
                         });

@@ -397,37 +397,39 @@ Handle<Value> Matrix::PreProcess(const v8::Arguments& args) {
 		int width = width_height->Get(0)->IntegerValue();
 		int height = width_height->Get(1)->IntegerValue();
 
-		// grayscale out img
-		cv::Mat gray;
-		if(self->mat.channels() != 1)
-			cvtColor(self->mat, gray, CV_BGR2GRAY);
+		if(self->mat.cols > 0) {
+			// grayscale out img
+			cv::Mat gray;
+			if(self->mat.channels() != 1)
+				cvtColor(self->mat, gray, CV_BGR2GRAY);
 
-		// apply resizing
-		int detection_width = 320;
-		cv::Mat smallImg;
-		float scale = gray.cols / (float)detection_width;
-		
-		int scaledHeight = cvRound(gray.rows / scale);
-		cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
+			// apply resizing
+			int detection_width = 320;
+			cv::Mat smallImg;
+			float scale = gray.cols / (float)detection_width;
+			
+			int scaledHeight = cvRound(gray.rows / scale);
+			cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
 
-		// apply histogram
-		equalizeHist(smallImg, smallImg);
+			// apply histogram
+			equalizeHist(smallImg, smallImg);
 
-		// crop the face out the processesed img
-		cv::Size size(width, height);
-		cv::Point2f pt( (x+(width/2)), (y+(height/2)));
-		cv::Mat dst;
-		cv::getRectSubPix(smallImg, size, pt, dst, CV_8U);
+			// crop the face out the processesed img
+			cv::Size size(width, height);
+			cv::Point2f pt( (x+(width/2)), (y+(height/2)));
+			cv::Mat dst;
+			cv::getRectSubPix(smallImg, size, pt, dst, CV_8U);
 
-		// shrink img to standard size
-		int reszied_w = 125;
-		int resized_h = 125;
+			// shrink img to standard size
+			int reszied_w = 125;
+			int resized_h = 125;
 
-		cv::Mat resized;
-		cv::resize(dst, resized, cv::Size(reszied_w, resized_h));
+			cv::Mat resized;
+			cv::resize(dst, resized, cv::Size(reszied_w, resized_h));
 
 
-		self->mat = resized;
+			self->mat = resized;
+		}
 	}
 
 	return scope.Close(v8::Null());

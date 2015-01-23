@@ -119,23 +119,24 @@ void CascadeClassifierWrap::AsyncDetectMultiScale(uv_work_t *req) {
 
   std::vector<cv::Rect> objects;
 
-  cv::Mat gray;
+  if(baton->im->mat.cols > 0) {
+      cv::Mat gray;
+      // grayscale out the img
+      if(baton->im->mat.channels() != 1)
+          cvtColor(baton->im->mat, gray, CV_BGR2GRAY);
 
-  // grayscale out the img
-  if(baton->im->mat.channels() != 1)
-      cvtColor(baton->im->mat, gray, CV_BGR2GRAY);
+      // resize img to standard size
+      int detection_width = 320;
+      cv::Mat smallImg;
+      float scale = gray.cols / (float)detection_width;
+      int scaledHeight = cvRound(gray.rows / scale);
 
-  // resize img to standard size
-  int detection_width = 320;
-  cv::Mat smallImg;
-  float scale = gray.cols / (float)detection_width;
-  int scaledHeight = cvRound(gray.rows / scale);
+      cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
 
-  cv::resize(gray, smallImg, cv::Size(detection_width, scaledHeight));
-
-  // apply histogram
-  equalizeHist( smallImg, smallImg);
-  baton->cc->cc.detectMultiScale(smallImg, objects, baton->scale, baton->neighbors, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(baton->minw, baton->minh));
+      // apply histogram
+      equalizeHist( smallImg, smallImg);
+      baton->cc->cc.detectMultiScale(smallImg, objects, baton->scale, baton->neighbors, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(baton->minw, baton->minh));
+  }
   
   baton->res = objects;
 

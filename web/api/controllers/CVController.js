@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-	
+
 
 
   /**
@@ -20,9 +20,9 @@ module.exports = {
       var cv = CVService.cv;
       var trainingData = [];
 
-      for (var i = 1; i < 41; i++){
-          for (var j = 1; j < 11; j++){
-            var filepath = "../../assets/facerec/facedb/att_faces/s" + i + "/" + j + ".pgm";
+      for (var i = 1; i < 7; i++){
+          for (var j = 1; j < 4; j++){
+            var filepath = "../../assets/facerec/facedb/custom/s" + i + "/" + j + ".pgm";
             path.resolve(__dirname, filepath);
             trainingData.push([i, path.resolve(__dirname, filepath) ]);
           }
@@ -66,8 +66,11 @@ module.exports = {
 
       var trainingData = [];
 
-      for (var i = 1; i < 3; i++){
-          for (var j = 1; j < 7; j++){
+      var numUsers = 7,
+          numImages = 4;
+
+      for (var i = 1; i < numUsers; i++){
+          for (var j = 1; j < numImages; j++){
             var filepath = "../../assets/facerec/facedb/custom/s" + i + "/" + j + ".pgm";
             trainingData.push([i, path.resolve(__dirname, filepath) ]);
           }
@@ -77,12 +80,14 @@ module.exports = {
       console.log("training...");
       facerec.trainSync(trainingData);
       console.log("done training");
-      
+
+      var imageReadPath = '../../assets/facerec/facedb/test/greg1.pgm';
+
       var predictedImg = {};
       // cv.readImage("/Users/masroorhasan/Downloads/att_faces/s6/9.pgm", function(e, im){
-      cv.readImage(path.resolve(__dirname, '../../assets/images/out/warren11.pgm'), function(e, im){    
+      cv.readImage(path.resolve(__dirname, imageReadPath), function(e, im){
           // facerec.loadSync(path.resolve(__dirname, "../../assets/facerec/eigenfaces.yml"));
-          
+
           predictedImg = facerec.predictSync(im);
           console.log(predictedImg);
       });

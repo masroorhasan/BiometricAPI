@@ -26,6 +26,18 @@ module.exports = {
    */
   _config: {},
 
+  testFind: function(req, res)
+  {
+  		console.log("testFind");
+  		User.find({id: '', username: 'greg'}).exec(function(err, model) {
+		    if (err) console.log(err);
+		    console.log(model);
+		    return res.send(model);
+		});
+
+		return;
+  },
+
   login: function (req, res) {
 	var bcrypt = require('bcrypt');
 	
