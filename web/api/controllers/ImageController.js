@@ -36,14 +36,8 @@ var ImageController = {
 
         image.data = image.data.replace(/^data:image\/png;base64,/, "");
 
-        var imageToSave;
         ImageService.create(req, image, function(img) {
-            imageToSave = img;
-        
-        
-            console.log("image to save: " + imageToSave);
-
-            Image.create(imageToSave).exec(function(err, model) {
+            Image.create(img).exec(function(err, model) {
 
                 if (err) {
                     console.log(err);
@@ -53,8 +47,8 @@ var ImageController = {
                     console.log("image to save id: " + model.id);
                 }
             });
-    });
-  }
+        });
+    }
 
 };
 
