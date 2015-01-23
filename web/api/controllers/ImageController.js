@@ -15,10 +15,16 @@ var ImageController = {
         res.view();
     },
 
+    capture: function(req, res){
+        // Capture image
+        // ImageService.create()
+        // 
+    },
+
     create: function(req, res) {
         var path = require('path');
-	var socket = req.socket;
-	var io = sails.io;
+    	var socket = req.socket;
+    	var io = sails.io;
         var cv = CVService.cv;
         var image = {
             data: req.param("data"),
