@@ -427,7 +427,6 @@ Handle<Value> Matrix::PreProcess(const v8::Arguments& args) {
             cv::Mat resized;
             cv::resize(dst, resized, cv::Size(reszied_w, resized_h));
 
-
             self->mat = resized;
         }
     }

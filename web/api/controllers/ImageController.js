@@ -7,116 +7,48 @@
 
 var ImageController = {
 
-  main: function(req, res) {
-    res.view();
-  },
+    main: function(req, res) {
+        res.view();
+    },
 
-  test: function(req, res) {
-    res.view();
-  },
+    test: function(req, res) {
+        res.view();
+    },
 
-  create: function(req, res) {
-    var path = require('path');
-    var socket = req.socket;
-    var io = sails.io;
-    var cv = CVService.cv;
-    var image = {
-      data: req.param("data"),
-      name: req.param("name")
-    };
+    capture: function(req, res){
+        // Capture image
+        // ImageService.create()
+        // 
+    },
 
-    if (!image.data) {
-      console.log("Error: no image data");
-      res.status(200);
-      return;
-    }
+    create: function(req, res) {
+        
+        var image = {
+            data: req.param("data"),
+            name: req.param("name")
+        };
 
-    image.data = image.data.replace(/^data:image\/png;base64,/, "");
+        if (!image.data) {
+            console.log("Error: no image data");
+            res.status(200);
+            return;
+        }
 
-    Image.create(image).exec(function(err, model) {
+        image.data = image.data.replace(/^data:image\/png;base64,/, "");
 
-      if (err) {
-        console.log(err);
-        res.send("Error: Shit went wrong");
-      } else {
+        ImageService.create(req, image, function(img) {
+            Image.create(img).exec(function(err, model) {
 
-        var imgpath = path.resolve(__dirname, '../../assets/images/sample/');
-        imgpath += "/" + model.name + "-" + model.id + ".png";
-
-        model.file = imgpath;
-        model.save(function(err) {
-          if (err) {
-            console.log(err);
-            res.send("Error: saving");
-          } else {
-            res.send("Success");
-          }
-        });
-
-        // async write
-        require("fs").writeFile(model.file, model.data, 'base64', function(err) {
-          if (err) {
-            console.log(err);
-          } else {
-            cv.readImage(model.file, function(err, im) {
-              im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
-                var goodImage = false;
-                for (var i = 0; i < faces.length; i++) {
-                  console.log("faces[" + i + "].x: " + faces[i].x);
-                  var coord = faces[i];
-                  goodImage = goodImage || coord.x > -1;
-                  console.log(goodImage);
-                  // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
-                  if (coord.x > -1) {
-                    im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
-                  }
-                }
-
-                if (!goodImage) {
-
-                  //io.sockets.in('room-' + socket.id).emit('badImage', {});
-                  ImageService.badImage(req.socket);
-                  console.log('socket id img: ' + socket.id);
+                if (err) {
+                    console.log(err);
+                    res.send("Error: Shit went wrong");
                 } else {
-
-                  var trainingData = [];
-
-                  for (var i = 1; i < 7; i++) {
-                    for (var j = 1; j < 4; j++) {
-                      var filepath = "../../assets/facerec/facedb/custom/s" + i + "/" + j + ".pgm";
-                      trainingData.push([i, path.resolve(__dirname, filepath)]);
-                    }
-                  }
-
-                  var facerec = cv.FaceRecognizer.createEigenFaceRecognizer();
-                  console.log("training...");
-                  facerec.trainSync(trainingData);
-                  console.log("done training");
-
-                  //io.sockets.in('room-' + socket.id).emit('goodImage', {});
-                  ImageService.goodImage(req.socket);
-                  console.log('socket id img: ' + socket.id);
-
-                  var out_pgm = path.resolve(__dirname, '../../assets/images/out/');
-                  out_pgm += "/" + model.id + ".pgm";
-                  im.save(out_pgm);
-
-                  var predictedImg = {};
-
-                  predictedImg = facerec.predictSync(out_pgm);
-                  console.log(predictedImg);
+                    console.log("Saving to elastic search - image collection");
+                    console.log("image to save id: " + model.id);
                 }
-
-              });
             });
-          }
         });
-      }
-
-    });
-
-    res.send("detecting...");
-  }
+    }
 
 };
 
