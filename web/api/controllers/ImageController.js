@@ -15,15 +15,10 @@ var ImageController = {
         res.view();
     },
 
-    capture: function(req, res){
-        // Capture image
-        // ImageService.create()
-        // 
-    },
 
     create: function(req, res) {
-        
         var image = {
+            id: SessionService.newImageID(req.socket);
             data: req.param("data"),
             name: req.param("name")
         };
