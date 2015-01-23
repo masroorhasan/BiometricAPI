@@ -1,33 +1,22 @@
-var connections = {};
 module.exports = {
     goodImage: function(sock) {
-        connections[sock.id] = {
-            counter: 0,
-            last_modified: new Date(),
-            flagging: false
-        };
-	   // TODO: how to clear the flag timer?
-
+        var connection = SessionService.getConnection(sock);
+        connection.counter = 0;
+        // TODO: how to clear the flag timer?
     },
 
     badImage: function(sock) {
-        if (!connections[sock.id]) {
-            connections[sock.id] = {
-                counter: 0,
-                last_modified: new Date(),
-                flagging: false
-            };
+        var connection = SessionService.getConnection(sock);
+
+        connection.counter++;
+        connection.last_modified = new Date();
+
+        // if we've gotten more than 4 bad in a row
+        // send a preflag event
+        if (connection.counter >= 4 && !connection.flagging) {
+            sock.emit('preFlag');
+            connection.flagging = true;
         }
-
-    	connections[sock.id].counter++;
-    	connections[sock.id].last_modified = new Date();
-
-    	// if we've gotten more than 4 bad in a row
-    	// send a preflag event
-    	if(connections[sock.id].counter >= 4 && !connections[sock.id].flagging) {
-    		sock.emit('preFlag');
-    		connections[sock.id].flagging = true;
-    	}
     },
 
     create: function(req, image, callback) {
@@ -38,15 +27,15 @@ module.exports = {
 
         var currentDate = new Date();
         var current_time = 0;
-        current_time += currentDate.getMilliseconds();  
+        current_time += currentDate.getMilliseconds();
 
         // Save (physical) img
         var imgpath = path.resolve(__dirname, '../../assets/images/sample/');
         // UserService.getUserid() + SessionService.getSessionid();
-        imgpath += "/" + current_time + ".png";  // {session-id_session-date_user-id_img-num}
+        imgpath += "/" + current_time + ".png"; // {session-id_session-date_user-id_img-num}
         image.file = imgpath;
-        
-        // 
+
+        //
         var imageToSave = {
             id: current_time,
             type: "image"
@@ -94,7 +83,7 @@ module.exports = {
                             // console.log("training...");
                             facerec.trainSync(trainingData);
                             // console.log("done training");
-                           
+
                             //io.sockets.in('room-' + socket.id).emit('goodImage', {});
                             ImageService.goodImage(req.socket);
                             console.log('socket id img: ' + socket.id);
