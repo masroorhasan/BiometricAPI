@@ -1,6 +1,8 @@
 define(['angular',
   'sails.io',
   'js/controllers',
+  'js/services',
+  'angular-route',
   'version-dir/interpolate-filter',
   'version-dir/version-directive',
   'version-dir/version',
@@ -8,55 +10,51 @@ define(['angular',
   'use strict';
   // Declare app level module which depends on views, and components
   var app = angular.module('fydp', [
+    'fydp.services',
     'fydp.controllers',
+    'ngRoute'
   ]);
-  /*app.
+  app.
   config(['$routeProvider', function($routeProvider) {
     $routeProvider
-      .when('/view2', {
+      .when('/login', {
+        templateUrl: 'partials/login.html',
+        controller: 'LoginCtrl',
+        reloadOnSearch: false
+      })
+      .when('/deployment', {
+        templateUrl: 'partials/deployment-list.html',
+        controller: 'DeploymentListCtrl',
+        css: 'css/deployment-list.css',
+        reloadOnSearch: false
+      })
+      .when('/deployment/:deployment', {
+        templateUrl: 'partials/deployment.html',
+        controller: 'DeploymentDetailCtrl',
+        css: 'css/deployment.css',
+        reloadOnSearch: false
+      })
+      .when('/login', {
         templateUrl: 'view2/view2.html',
-        controller: 'View2Ctrl'
+        controller: 'view2Ctrl'
       })
       .when('/view1', {
         templateUrl: 'view1/view1.html',
-        controller: 'View1Ctrl'
+        controller: 'view1Ctrl'
       })
       .otherwise({
         redirectTo: '/view1'
       });
-  }]);*/
-  app.factory('socket', function($rootScope) {
-    var socket = io.connect();
-    return {
-      on: function(eventName, callback) {
-        socket.on(eventName, function() {
-          var args = arguments;
-          $rootScope.$apply(function() {
-            callback.apply(socket, args);
-          });
-        });
-      },
-      emit: function(eventName, data, callback) {
-        socket.emit(eventName, data, function() {
-          var args = arguments;
-          $rootScope.$apply(function() {
-            if (callback) {
-              callback.apply(socket, args);
-            }
-          });
-        })
-      },
-      request: function(url, where, callback) {
-        socket.request(url, where, function() {
-          var args = arguments;
-          $rootScope.$apply(function() {
-            if (callback) {
-              callback.apply(socket, args);
-            }
-          });
-        });
-      }
-    };
-  });
+  }]);
+
+    /*.run(['$rootScope', 'AuthService', function($rootScope, AuthService) {
+      $rootScope.$on('$locationChangeStart', function(event, next, current) {
+        if (!AuthService.isLoggedIn()) {
+          if (!_.chain(next.split("#")).last().isEqual('/login').value()) {
+            AuthService.authRequired();
+          }
+        }
+      });
+    }]);*/
   return app;
 });

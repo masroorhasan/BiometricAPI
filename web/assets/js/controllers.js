@@ -1,7 +1,8 @@
 define(function(require) {
   'use strict';
   var angular = require('angular'),
-  Controllers = angular.module('fydp.controllers', []);
+    services = require('js/services'),
+  Controllers = angular.module('fydp.controllers', ['fydp.services']);
   Controllers
     .controller('testController',
         require('js/controllers/testController'))

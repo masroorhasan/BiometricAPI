@@ -1,0 +1,22 @@
+<div class="outer-container">
+  <div class="save-bar">
+    <h1>
+      Welcome! Please login.
+    </h1>
+  </div>
+</div>
+<!-- Display the login form -->
+<div class="container-outer">
+  <div id='login'>
+    <div class="box">
+      <p>{{message}}</p>
+      <form ng-submit="">
+        <label>User name:</label>
+        <input class="error" ng-model="username" type="text" size=15 autofocus/><br />
+        <label>Password:</label>
+        <input ng-model="password" type="password" size=15 /><br />
+        <button ng-click="submitLogin()" type="submit" ng-model="loginInProgress" disabler="'Login'" value='Login'>Login</button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 var connections = {};
 module.exports = {
 
-    newImageID: function(sock) = {
+    newImageID: function(sock) {
         return SessionService.getConnection(sock).count++;
     },
 

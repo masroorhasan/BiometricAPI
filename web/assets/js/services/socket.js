@@ -1,9 +1,7 @@
 define('sails.io', function(io) {
   return function($rootScope) {
-
     var socket = io.connect();
-    return socket;
-    /*return {
+    return {
       on: function(eventName, callback) {
         socket.on(eventName, function() {
           var args = arguments;
@@ -21,7 +19,17 @@ define('sails.io', function(io) {
             }
           });
         })
+      },
+      request: function(url, where, callback) {
+        socket.request(url, where, function() {
+          var args = arguments;
+          $rootScope.$apply(function() {
+            if (callback) {
+              callback.apply(socket, args);
+            }
+          });
+        });
       }
-    };*/
+    };
   };
 });
