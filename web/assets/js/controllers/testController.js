@@ -1,26 +1,24 @@
 define(function(require) {
   var angular = require('angular');
   return ['$scope', '$http', '$log', '$interval', 'socket', function($scope, $http, $log, $interval, socket) {
-    var $this = this;
-    $this.images = [];
-    $this.timey = 0;
+    $scope.images = [];
     socket.on("connect", function() {
       $log.info('socket connected');
+
       socket.request("/image", {}, function(images) {
-        $this.images = images;
-        $interval(function() {$this.timey += 1;}, 100);
+        $scope.images = images;
       });
 
       socket.on("image", function(res) {
         if (res.verb === "created") {
-          $this.images.push(res.data);
+          $scope.images.push(res.data);
         } else if (res.verb === "updated") {
-          var image = _.findWhere($this.images, {id: res.data.id});
-          var idx = _.indexOf($this.images, image);
+          var image = _.findWhere($scope.images, {id: res.data.id});
+          var idx = _.indexOf($scope.images, image);
 
 
         } else if (res.verb === "destroyed") {
-          $this.images.remove($this.images.get(res.data.id));
+          $scope.images.remove($scope.images.get(res.data.id));
         }
       });
     });

@@ -31,6 +31,7 @@
     <!--STYLES-->
     <link rel="stylesheet" href="/styles/fonts.css">
     <link rel="stylesheet" href="/styles/importer.css">
+    <link rel="stylesheet" href="/styles/view1.css">
     <!--STYLES END-->
 
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -41,14 +42,9 @@
 
   </head>
 
-  <body ng-app>
+  <body ng-app='fydp'>
     <div ng-view>
-      <div class="container">
-        <div>Angular seed app: v<span app-version></span></div>
-        <div ng-controller="testController as tc">
-          <span>{{tc.timey}}</span>
-        </div>
-      </div>
+
     </div>
     <%- body %>
 
@@ -77,7 +73,7 @@
     -->
 
     <!--TEMPLATES-->
-    <script type="text/javascript" src="/jst.js"></script>
+    
     <!--TEMPLATES END-->
 
 

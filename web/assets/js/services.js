@@ -1,7 +1,9 @@
 define(function(require) {
   'use strict';
   var angular = require('angular'),
-    Services = angular.module('fydp.services', []);
+    cookies = require('angular-cookies'),
+    resource = require('angular-resource'),
+    Services = angular.module('fydp.services', ['ngResource']);
 
   Services.factory('socket', function($rootScope) {
     var socket = io.connect();
@@ -36,6 +38,12 @@ define(function(require) {
       }
     };
   });
+
+  Services
+    .factory('AuthService',
+      require('js/services/AuthService'))
+    .factory('ImageService',
+        require('js/services/ImageService'));
 
   return Services;
 });
