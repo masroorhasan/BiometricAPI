@@ -1,11 +1,13 @@
 define(function(require) {
   'use strict';
 
+  var angular = require('angular');
+
   /*
    * Handles authorization/login.
    */
 
-  return ['$cookieStore', '$http', '$location', '$log', 'COGNITECH_CONFIG', function($cookieStore, $http, $location, $log, COGNITECH_CONFIG) {
+  return function($cookieStore, $http, $location, $log, COGNITECH_CONFIG) {
     $log.info('Initializing AuthService');
 
     var cookieUsername = '';
@@ -125,5 +127,5 @@ define(function(require) {
         }
       },
     };
-  }];
+  };
 });

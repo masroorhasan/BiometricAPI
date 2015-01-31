@@ -3,6 +3,7 @@ define(['angular',
   'js/controllers',
   'js/services',
   'js/directives',
+  'js/config',
   'angular-route',
   'angular-sanitize',
   'version-dir/interpolate-filter',
@@ -15,34 +16,31 @@ define(['angular',
     'fydp.services',
     'fydp.controllers',
     'fydp.directives',
+    'fydp.config',
     'ngSanitize',
     'ngRoute',
     'ngCookies'
   ]);
   app
-    .constant('CONGITECH_CONFIG', require('js/config'))
-    .config(['$routeProvider', function($routeProvider) {
+    .config(function($routeProvider, $locationProvider) {
+      $locationProvider.html5Mode(true);
       $routeProvider
         .when('/', {
           templateUrl: 'partials/index.html',
-          reloadOnSearch: false
         })
         .when('/login', {
           templateUrl: 'partials/login.html',
           controller: 'LoginCtrl',
-          reloadOnSearch: false
         })
         .when('/view1', {
           templateUrl: 'partials/view1.html',
           controller: 'view1Ctrl',
           css: 'styles/view1.css',
-          reloadOnSearch: false
         })
         .when('/test', {
           templateUrl: 'partials/test.html',
           controller: 'testController',
           css: 'styles/view1.css',
-          reloadOnSearch: false
         })
         .when('/user/:user', {
           templateUrl: 'partials/user_profile.html',
@@ -67,7 +65,7 @@ define(['angular',
         .otherwise({
           redirectTo: '/'
         });
-    }]);
+    });
 
   /*.run(['$rootScope', 'AuthService', function($rootScope, AuthService) {
     $rootScope.$on('$locationChangeStart', function(event, next, current) {

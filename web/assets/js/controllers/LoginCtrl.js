@@ -3,7 +3,7 @@ define(function(require) {
   /*
    * Login controller
    */
-  return ['$log', '$scope', 'AuthService', function($log, $scope, AuthService) {
+  return function($log, $scope, AuthService) {
     $log.info('Initializing LoginCtrl');
 
     $scope.username = AuthService.username;
@@ -29,5 +29,5 @@ define(function(require) {
         AuthService.authOK($scope.username, result);
       });
     };
-  }];
+  };
 });

@@ -42,7 +42,7 @@ define(function(require) {
   Services
     .factory('AuthService',
       require('js/services/AuthService'))
-    .factory('ImageService',
+    .factory('Image',
         require('js/services/ImageService'));
 
   return Services;

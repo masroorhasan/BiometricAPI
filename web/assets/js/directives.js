@@ -3,31 +3,55 @@ define(function(require) {
   var angular = require('angular'),
     Directives = angular.module('fydp.directives', []);
 
-  Directives.directive('frontEnd', function(ImageService) {
+  Directives.directive('frontEnd', function(Image, $log) {
     return {
       restrict: 'E',
       templateUrl: 'partials/front-end.html',
-      controller: function($scope) {
-        $scope.images = ImageService.query();
+      link: function($scope, $element, attrs) {
+        $scope.video = $element.find('video');
+        $scope.canvas = $element.find('canvas')[0];
+        $scope.ctx = $scope.canvas.getContext('2d');
+      },
+      controller: function($scope, $timeout) {
+        var $this = this;
+        $scope.images = Image.query();
 
         $scope.addImage = function(image) {
           $scope.images.push(image);
         };
 
-        $scope.$on('capture-image', function() {
+        var captureImage = function() {
           console.log("capture-image emitted");
-          convertImgToBase64('http://localhost:1337/images/test.png', function(base64) {
-            console.log("convertToBase callback");
-            var image = new Image({
-              id: null,
-              imageData: base64,
-              imageName: 'boop'
-            });
-            image.$save(function(data) {
-              var x = "";
-            });
+          // $log(capture Image)
+          $scope.ctx.drawImage($scope.video, 0, 0, $scope.canvas.width, $scope.canvas.height);
+          var dataUrl = $scope.canvas.toDataURL();
+          var image = new Image({
+            id: null,
+            data: dataUrl,
+            name: 'boop'
           });
-        });
+          image.$save(function(data) {
+            $log("image save success: %s", data);
+          }, function(a, b, c, d){
+            $log("image save failed: %s", a);
+          });
+        };
+
+        var captureTimeout = function() {
+            $timeout(captureImage, Math.floor((Math.random() * 10000) + 5000)); // 5-10 second interval
+        };
+
+        $scope.$on('capture-image', captureImage);
+
+        var connect = function(stream) {
+          $scope.video = document.getElementById("video");
+          $scope.video.src = window.URL ? window.URL.createObjectURL(stream) : stream;
+          $scope.video.play();
+        };
+
+        var error = function(e) {
+          console.log(e);
+        };
 
         var setup = function() {
           navigator.myGetMedia = (navigator.getUserMedia ||
@@ -37,16 +61,6 @@ define(function(require) {
           navigator.myGetMedia({
             video: true
           }, connect, error);
-        };
-
-        var connect = function(stream) {
-          video = document.getElementById("video");
-          video.src = window.URL ? window.URL.createObjectURL(stream) : stream;
-          video.play();
-        };
-
-        var error = function(e) {
-          console.log(e);
         };
 
 
@@ -67,7 +81,8 @@ define(function(require) {
           };
           img.src = url;
         };
-
+        setup();
+        captureTimeout();
       }
     };
   });
