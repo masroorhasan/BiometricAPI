@@ -17,32 +17,6 @@ module.exports.sockets = {
     // Keep in mind that Sails' RESTful simulation for sockets
     // mixes in socket.io events for your routes and blueprints automatically.
     onConnect: function(session, socket) {
-        var noRes;
-        var badCount = 0;
-
-        /*var preFlag = function(sess, sock) {
-            sock.emit('preFlag', {}); // alert the client to show message
-            noRes = setTimer(function() {
-                // if we reach here, we did not get a response from the
-                // preFlag event in a timely manner. flag and continue
-            }, 15000);
-        };
-
-        socket.on('clearFlag', function(req, res) {
-            console.log('clearFlag');
-            clearInterval(noRes);
-        });
-
-        socket.on('badImage', function(res) {
-            // preFlag after 4 consecutive bad images
-            if (++badCount >= 4) {
-                preFlag(req.socket, {});
-            }
-        });
-
-        socket.on('goodImage', function(req, res) {
-            badCount = 0;
-        });*/
 
         var capture = function(sess, sock) {
             // tell the client to take a picture every 5 secs
@@ -50,6 +24,10 @@ module.exports.sockets = {
                 sock.emit('captureImage', {});
             }, 5000);
         };
+
+	socket.on('clearFlag', function(res) {
+		ImageService.clear(socket);
+	});
 
         console.log("connected");
 
@@ -59,8 +37,7 @@ module.exports.sockets = {
 
     // This custom onDisconnect function will be run each time a socket disconnects
     onDisconnect: function(session, socket) {
-
-        // By default: do nothing.
+	   // ImageService.remove(socket);
     },
 
 

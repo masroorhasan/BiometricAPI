@@ -13,5 +13,6 @@ module.exports.models = {
   //
   // (defaults to localDiskDb)
   //connection: 'memory'
-  connection: 'elasticSearchAdapter'
+  connection: 'elasticSearchAdapter',
+  migrate: 'alter'
 };

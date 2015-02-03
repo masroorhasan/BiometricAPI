@@ -18,7 +18,7 @@ var ImageController = {
 
     create: function(req, res) {
         var image = {
-            id: SessionService.newImageID(req.socket);
+            id: SessionService.newImageID(req.socket),
             data: req.param("data"),
             name: req.param("name")
         };
