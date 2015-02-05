@@ -25,8 +25,15 @@ module.exports = {
             type      : 'string',
             required  : true,
             minLength : 6
+        },
+        firstname: {
+            type      : 'string',
+            required  : true
+        },
+        lastname: {
+            type      : 'string',
+            required  : true
         }
-
     },
 
     beforeCreate: function(attrs, next) {
