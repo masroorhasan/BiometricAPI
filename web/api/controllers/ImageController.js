@@ -58,10 +58,14 @@ var ImageController = {
                     ImageService.recognize(pgmImage, function(prediction){
                         // Verify if prediction.id == userid
                         console.log(prediction);
+                        res.send("OK");
+                        res.status(200);
                     });
                 });
             }
         });
+
+       
     },
 
     retrieve: function(req, res) {

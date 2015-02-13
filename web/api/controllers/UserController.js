@@ -25,8 +25,8 @@ module.exports = {
   testFind: function(req, res) {
     console.log("testFind");
     User.find({
-      id: '',
-      username: 'greg'
+      // id: '',
+      username: 'm22hasan'
     }).exec(function(err, model) {
       if (err) console.log(err);
       console.log(model);

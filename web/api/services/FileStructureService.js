@@ -17,11 +17,13 @@ module.exports = {
         var path_db = path.resolve(__dirname, dbfilepath);
 
         var userpath_db = path.resolve(__dirname, path_db);
-        
-
     },
 
-    getYmlDir: function() {
+    checkExistsDirSync: function(path) {
+        return require('fs').existsSync(path);
+    },
+
+    getGlobalYmlDir: function() {
         return FileStructureService.getDbPath() + "/yml";
     },
 
@@ -41,6 +43,10 @@ module.exports = {
         return FileStructureService.getDbPath() + "/" + userid.toString() + "/sessions/" + sessionid.toString();
     },
 
+    checkGlobalYmlSync: function() {
+        return require('fs').existsSync(FileStructureService.getGlobalYmlDir() + "/global.yml");
+    },
+
     getDbPath: function() {
         var path = require('path');
         // TODO
@@ -49,6 +55,10 @@ module.exports = {
         // console.log("createUserDir path_db " + path_db);
 
         return path_db;
+    },
+
+    createGlobalYMLDirSync: function() {
+        FileStructureService.createDir(FileStructureService.getGlobalYmlDir());
     },
 
     createImageDirs: function(dirpath) {
@@ -125,21 +135,32 @@ module.exports = {
         return;
     },
 
+    existsFilePathSync: function(filepath) {
+        
+        if(require('fs').existsSync(filepath))
+            return true; 
+
+        return false;
+    },
+
     getFilesRecursiveSync: function (dir, fileList, optionalFilterFunction) {
+        
         if (!fileList) {
             grunt.log.error("Variable 'fileList' is undefined or NULL.");
             return;
         }
-        var files = fs.readdirSync(dir);
+        var files = require('fs').readdirSync(dir);
         for (var i in files) {
             if (!files.hasOwnProperty(i)) continue;
             var name = dir + '/' + files[i];
-            if (fs.statSync(name).isDirectory()) {
+            if (require('fs').statSync(name).isDirectory()) {
                 getFilesRecursiveSync(name, fileList, optionalFilterFunction);
             } else {
                 if (optionalFilterFunction && optionalFilterFunction(name) !== true)
                     continue;
-                fileList.push(name);
+
+                if(require('path').extname(name) == ".pgm")
+                    fileList.push(name);
             }
         }
     }

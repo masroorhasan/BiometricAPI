@@ -8,13 +8,13 @@ module.exports = {
     },
 
 
-    createUser: function(username, firstname, lastname) {
+    createUser: function(id, username, firstname, lastname) {
         console.log("AuthService.createUser");
         // var id = AuthService.getId();
         var user = {
             "index": "cognitech",
             "type": "user",
-            "id": 0,    // TODO: update to autoincrement
+            "id": id,    // TODO: update to autoincrement
 
             'username': username, 
             'firstname': firstname, 
@@ -23,5 +23,25 @@ module.exports = {
         };
 
         return user;
+    },
+
+    getUserByUsername: function(value, cb) {
+
+        // console.log('getUserByUsername, username ' + value);
+        User.find({
+          // id: '',
+          username: value.toString()
+        }).exec(function(err, model) {
+            if (err) console.log(err);
+            console.log(model);
+            var user = _.first(model);
+            // console.log(user);
+
+            cb(err, user);
+
+            return model;
+        });
+
+        return;
     }
 };
