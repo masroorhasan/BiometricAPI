@@ -38,13 +38,25 @@ module.exports = {
         console.log("Image from authController/login " + image);
         console.log("Image processing starts");
 
+
+        AuthService.authUser(username, image, function(err, matched){
+            if(matched == true) {
+                console.log("AuthService login: success");
+                return true;
+
+                // TODO Error
+                // return Sessions.newSession(username);    
+            } else {
+                console.log("AuthService login: failure");
+            }
+        });
        
-        if(AuthService.authUser(username, image)) {
-            console.log("AuthService login: success");
-            return Sessions.newSession(username);
-        } else {
-            console.log("AuthService login: failure");
-        }
+        // if(AuthService.authUser(username, image)) {
+        //     console.log("AuthService login: success");
+        //     return Sessions.newSession(username);    
+        // } else {
+        //     console.log("AuthService login: failure");
+        // }
     },
 
     register: function(user, images, cb) {
@@ -139,7 +151,7 @@ module.exports = {
         return 0;
     },
 
-    authUser: function(username, image) {
+    authUser: function(username, image, logincb) {
         /**
          * authenticate user
          * returns: boolean
@@ -154,14 +166,17 @@ module.exports = {
         var userMatched = false;
         // TODO: UserService.get(...)
         // Get user id from username
-        UserService.getUserByUsername(username, function(err, user){
+        UserService.getUserByUsername(username, function(err, user) {
             if(!err) {
                 // console.log("found username " + username + " with userid " + user.id);
-                console.log(user);
+                // TODO: Filter after query
+                
+                // console.log("user found in authservice: " + user);
                 if(username != user.username) {
                     console.log("Username does not match, found: " + user.username);
                     console.log(err);
-                    return;
+                    // return false;
+                    logincb(err, false);
                 }
 
                 userMatched = true;
@@ -235,9 +250,13 @@ module.exports = {
                                     var imageMatched = false;
 
                                     // Load global yml
-                                    var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
-                                    facerec.loadSync(globalyml);
+                                    // var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
+                                    // facerec.loadSync(globalyml);
                                     
+                                    var useryml = FileStructureService.getUserYML(user.id);
+                                    console.log("loading user yml " + useryml);
+                                    facerec.loadSync(useryml);
+
                                     var predictiondata = facerec.predictSync(im);
                                     console.log(predictiondata);
 
@@ -247,29 +266,39 @@ module.exports = {
                                     console.log("predictiondata.id " + predictiondata.id);
                                     console.log("imageMatched " + imageMatched);
 
-                                    return userMatched && imageMatched;
+                                    // Update yml
+                                    
+                                    var matched = ((imageMatched == 1) && (userMatched == 1));
+                                    console.log("matched: " + matched);
+
+
+                                    if(matched == true) {
+                                        facerec.updateSync([user.id, pgm_filepath]);
+                                    }
+
+                                    logincb(err, matched);
+                                    // return ((imageMatched == 1) && (userMatched == 1));
                                 });    
                             }
-                            else {
+                            // else {
 
-                                // TODO: Couldnt find file
-                                return false;
-                            }
+                            //     // TODO: Couldnt find file
+                            //     return false;
+                            // }
                         });    
-                    } else {
-                        return false;
-                    }
+                    } 
+                    // else {
+                    //     return false;
+                    // }
                 });  
                       
-            } else {
-                console.log("username " + username + " not found");
-                return userMatched;
-            }
+            } 
+            // else {
+            //     console.log("username " + username + " not found");
+            //     return userMatched;
+            // }
 
         });
-
-        // Get and match image
-        return;     
     },
 
     logout: function() {

@@ -31,6 +31,10 @@ module.exports = {
         return FileStructureService.getDbPath() + "/" + userid.toString();
     },
 
+    getUserYML: function(userid) {
+        return FileStructureService.getUserDir(userid) + "/" + userid.toString() + ".yml";
+    },
+
     getAuthDir: function(userid) {
         return FileStructureService.getDbPath() + "/" + userid.toString() + "/auth";
     },
@@ -45,6 +49,10 @@ module.exports = {
 
     checkGlobalYmlSync: function() {
         return require('fs').existsSync(FileStructureService.getGlobalYmlDir() + "/global.yml");
+    },
+
+    checkUserYMLSync: function(userid) {
+        return require('fs').existsSync(FileStructureService.getUserYML(userid));
     },
 
     getDbPath: function() {

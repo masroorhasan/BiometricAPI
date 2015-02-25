@@ -148,30 +148,45 @@ module.exports = {
             var facerec = RecognizerService.facerec();
             
             // TRAINING END CODE
+            
+
+            // Global yml 
             var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
+
+            // User yml
+            var useryml = FileStructureService.getUserYML(userid);
             var updated = false;
-            // Check if yml file exits
-            if(!FileStructureService.checkGlobalYmlSync()) {
+            
+            // Check if global yml file exits
+            // if(!FileStructureService.checkGlobalYmlSync()) {
+            if(!FileStructureService.checkUserYMLSync(userid)) {
                 
                 console.log("training...");
                 console.log(trainingData);
                 facerec.trainSync(trainingData);
                 // Create global .yml
-                console.log("creating yml" + globalyml);
-                facerec.saveSync(globalyml);
+                // console.log("creating global yml" + globalyml);
+                
+                // Create user .yml
+                console.log("creating user yml" + useryml);
+
+                // Save global yml
+                // facerec.saveSync(globalyml);
+                
+                // Save user yml
+                facerec.saveSync(useryml);
+
+
                 console.log("updating yml with first image");
                 facerec.updateSync(trainingData);
 
                 updated = true;
             } else {
-                console.log("global yml already exists");
-                // trainingData = [];
-
-                // console.log("pushing data");
-                // console.log([userid, pgm_filepath]);
+                // console.log("global yml already exists");
+                console.log("user yml already exists");
                 var imgmetadata = image.metadata;
                 var imgtype = imgmetadata.imgtype;
-                // console.log(imgtype);
+                
 
                 // TODO imgtype.data
                 if(imgtype.id == 'auth' /*&& type.data == 'register'*/) {   
@@ -189,8 +204,12 @@ module.exports = {
                 console.log("file exists " + pgm_filepath);
 
                 cv.readImage(pgm_filepath, function(e, im){    
-                    console.log("loading yml");
-                    facerec.loadSync(globalyml);
+                    
+                    // console.log("loading global yml");
+                    // facerec.loadSync(globalyml);
+                    
+                    console.log("loading user yml");
+                    facerec.loadSync(useryml);
 
                     var predictiondata = facerec.predictSync(im);
                     console.log(predictiondata);
@@ -432,11 +451,12 @@ module.exports = {
                 // Max area of face
                 var face = _.chain(faces)
                             .sortBy(function(coord){
-                                return coord.width * coord.height;
+                                return coord.x * coord.y;
                             })
                             .last()
                             .value();
 
+                console.log("face x " + face.x + ", y " + face.y);
                 console.log("x+width/2 : " + (face.x+(face.width/2)));
                 console.log("y+height/2 : " + (face.y+(face.height/2)));
 
