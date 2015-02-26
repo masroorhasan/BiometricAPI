@@ -35,10 +35,7 @@ module.exports.connections = {
 
   // MySQL is the world's most popular relational database.
   // http://en.wikipedia.org/wiki/MySQL
-  //
-  // Run:
   // npm install sails-mysql
-  //
   someMysqlServer: {
     adapter: 'sails-mysql',
     host: 'YOUR_MYSQL_SERVER_HOSTNAME_OR_IP_ADDRESS',
@@ -89,6 +86,9 @@ module.exports.connections = {
   //   sniffOnConnectionFault: true,
   //   apiVersion: '1.3'
   // }
+  
+  // Elastic Search adapter
+  // https://www.npmjs.com/package/sails-elasticsearch
   elasticSearchAdapter: {
     adapter: 'waterline-elasticsearch',
     host: 'localhost',

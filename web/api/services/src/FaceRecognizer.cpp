@@ -72,14 +72,26 @@ FaceRecognizerWrap::FaceRecognizerWrap(cv::Ptr<cv::FaceRecognizer> f, int type){
 
 extern "C" 
 Handle<Value> FaceRecognizerWrap::CreateLBPH(const Arguments &args) {
-	HandleScope scope;
+    
+    // V8 scope
+    HandleScope scope;
 
+    // Radius
     int radius = 1;
+
+    // Number of adjacent pixels relative to current pixel
     int neighbors = 8;
+
+    // Width of histogram region
     int grid_x = 8;
+
+    // Height of histrogram region
     int grid_y = 8;
+    
+    // Threshold value
     double threshold = 80.0;
 
+    // Get overloaded parameters from calling function
     INT_FROM_ARGS(radius, 0)
     INT_FROM_ARGS(neighbors, 1)
     INT_FROM_ARGS(grid_x, 2)
@@ -90,8 +102,8 @@ Handle<Value> FaceRecognizerWrap::CreateLBPH(const Arguments &args) {
   	Local<Object> n = FaceRecognizerWrap::constructor->GetFunction()->NewInstance();
   	cv::Ptr<cv::FaceRecognizer> f = cv::createLBPHFaceRecognizer(radius, neighbors, grid_x, grid_y, threshold);
 
+    // Wrap to send back to node.js
 	  FaceRecognizerWrap *pt = new FaceRecognizerWrap(f, LBPH);
-
   	pt->Wrap(n);
   	return n;
 }
