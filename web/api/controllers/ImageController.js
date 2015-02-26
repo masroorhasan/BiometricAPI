@@ -47,7 +47,8 @@ var ImageController = {
         */
        
        //var rawImgPath = '../../assets/images/sample/';
-
+       
+       // TODO: Use new methods
        ImageService.writePNGFile(image, function(imageSaved, current_time, image){
             if(imageSaved)
             {
@@ -55,8 +56,19 @@ var ImageController = {
                 // Detection
                 ImageService.detect(image, current_time, function(pgmImage) {
                     // Recognition
+                    
+                    console.log("pgmImage in controller before recognize " + pgmImage);
+
+                    if((!pgmImage) || (0 === pgmImage.length)) {
+                        console.log("bad image");
+                        res.send("OK: Bad Image. Pgm not created.");
+                        res.status(200);
+                        return;
+                    }
+
                     ImageService.recognize(pgmImage, function(prediction){
                         // Verify if prediction.id == userid
+                        
                         console.log(prediction);
                         res.send("OK");
                         res.status(200);

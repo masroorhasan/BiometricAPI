@@ -92,7 +92,11 @@ module.exports = {
                 // Store Image, UserImage
                 _.each(images, function(image, id/*, imagelist*/) {
                     ImageService.createImage(image, imgtype, userid, function(err, imageid, image){
-                        console.log("Image created, id " + imageid);
+                        if(imageid != -1) {
+                            console.log("Image created, id " + imageid);    
+                        } else {
+                            console.log("Bad Image");
+                        }
                     });
                 });
 
@@ -219,8 +223,16 @@ module.exports = {
                 ImageService.writePNGImageFile(image, function(err){
                     if(!err) {
                         // Write .pgm file
-                        ImageService.writePostDetectionFile(image, function(err){
+                        ImageService.writePostDetectionFile(image, function(err, pgmimagefilepath){
                             // console.log("writePostDetectionFile cb");
+                            
+                            if((!pgmimagefilepath) || (0 === pgmimagefilepath.length)) {
+                                console.log("bad image");
+                                // res.send("OK: Bad Image. Pgm not created.");
+                                // res.status(200);
+                                logincb(err, false);
+                                return;
+                            }
 
                             // TODO: Call training and precitor methods
                             console.log("Finished writing pgm file");
@@ -273,7 +285,11 @@ module.exports = {
 
 
                                     if(matched == true) {
-                                        facerec.updateSync([user.id, pgm_filepath]);
+                                        modelData = [];
+                                        modelData.push([user.id, pgm_filepath]);
+                                        
+                                        console.log("Updating yml for user ", user.id);
+                                        facerec.updateSync(modelData);
                                     }
 
                                     logincb(err, matched);

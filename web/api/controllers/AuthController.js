@@ -20,10 +20,16 @@ var AuthController = {
         console.log("loginController data.username: "+ data.username);
 
         var img = {
-            id: 0, // SessionService.newImageID(req.socket),
-            data: "data", // req.param("data"),
-            name: "name" //req.param("name")
+            id: 0, 
+            data: "data", 
+            name: "name"
         };
+
+        // var img = {
+        //     id: SessionService.newImageID(req.socket),
+        //     data: req.param("data"),
+        //     name: req.param("name")
+        // };
 
         if (!img.data) {
             console.log("Error: no image data");
@@ -33,10 +39,10 @@ var AuthController = {
 
         // img.data = img.data.replace(/^data:image\/png;base64,/, "");        
         var images = [];
-        images.push(ImageService.createImageObject(img, 3));
+        images.push(ImageService.createImageObject(img, 9));
 
         // Test
-        var image = ImageService.createImageObject(img, 3);
+        var image = ImageService.createImageObject(img, 9);
         AuthService.login(data.username, image);
         res.send("Response from auth/login");
 
@@ -48,10 +54,16 @@ var AuthController = {
         console.log("registerController data.username: "+ data.username);
 
         var img = {
-            id: 0, // SessionService.newImageID(req.socket),
-            data: "data", // req.param("data"),
-            name: "name" //req.param("name")
+            id: 0, 
+            data: "data", 
+            name: "name"
         };
+
+        // var img = {
+        //     id: SessionService.newImageID(req.socket),
+        //     data: req.param("data"),
+        //     name: req.param("name")
+        // };
 
         if (!img.data) {
             console.log("Error: no image data");
@@ -71,7 +83,7 @@ var AuthController = {
 
         // Create image object
         var id = 0;
-        for(id = 0; id < 3; id++){
+        for(id = 0; id < 9; id++){
             var image = ImageService.createImageObject(img, id);
             images[id] = image;
             // console.log(images[id].data);

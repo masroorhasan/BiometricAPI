@@ -96,8 +96,16 @@ module.exports = {
         ImageService.writePNGImageFile(image, function(err){
             if(!err) {
                 // Write .pgm file
-                ImageService.writePostDetectionFile(image, function(err){
+                ImageService.writePostDetectionFile(image, function(err, pgmimagefilepath){
                     console.log("writePostDetectionFile cb");
+
+                    if((!pgmimagefilepath) || (0 === pgmimagefilepath.length)) {
+                        console.log("bad image");
+                        // res.send("OK: Bad Image. Pgm not created.");
+                        // res.status(200);
+                        cb(err, -1);
+                        return;
+                    }
 
                     // If auth = register
             // train -> save -> load -> predict -> update current
@@ -438,9 +446,9 @@ module.exports = {
                 // Test with assets/images/sample/auth/704.png
                 console.log(faces);
 
-                if(!faces) {
+                if(!faces || _.isEmpty(faces) == true) {
                     console.log("No faces detected: UNKNOWN state");
-                    cb(err);
+                    cb(err, "");
                     return;
                 }
 
@@ -490,7 +498,7 @@ module.exports = {
                 // Save pgm file
                 im.save(pgmfilepath);
 
-                cb(err);
+                cb(err, pgmfilepath);
             });
         });
     },
@@ -509,17 +517,18 @@ module.exports = {
         var cv = CVService.cv;
 
         // console.log("image in recog: " + image);
-        var imagefilepath = "../../assets/facerec/facedb/custom/p1/" + 3 + ".pgm";
-
+        var imagefilepath = pgmfilepath; //"../../assets/facerec/facedb/custom/p1/" + 3 + ".pgm";
+        console.log("imagefilepath in recognize: " + imagefilepath);
         // TODO***
         // Use global face rec 
-        // var facerec = RecognizerService.facerec();
-        // var facerec = cv.FaceRecognizer.createLBPHFaceRecognizer();
         var facerec = RecognizerService.facerec();
+        // var facerec = cv.FaceRecognizer.createLBPHFaceRecognizer();
+        // var facerec = RecognizerService.facerec();
 
         // TODO: move training to CV/Session service
         var xmlfile = path.resolve(__dirname, "../../assets/facerec/faces.xml");
         var trainingData = [];
+
         if(!require('fs').existsSync(xmlfile)) {
             console.log("xml does not exist");
             for (var i = 0; i < 2; i++) {
@@ -578,6 +587,7 @@ module.exports = {
     detect: function(image, current_time, callback) {
         var path = require('path');
         var cv = CVService.cv;
+        var _ = require('underscore');
 
         cv.readImage(image.file, function(err, im) {
             im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
@@ -586,24 +596,33 @@ module.exports = {
                 // Handle faces.length > 1
                 // Handle image dimensions + coords before resize
                 
-                console.log("faces: " + faces);
+                console.log(faces);
 
+                if(!faces || _.isEmpty(faces) == true) {
+                    console.log("No faces detected: UNKNOWN state");
+                    var pgmfilenotfound = "";
+                    callback(pgmfilenotfound);
+                    return;
+                }
+
+                if(faces.length > 1) {
+                    console.log("Multiple faces detected: MULTIPLE state");
+                }
+                    
                 // Max area of face
                 var face = _.chain(faces)
                             .sortBy(function(coord){
-                                return coord.width * coord.height;
+                                return coord.x * coord.y;
                             })
                             .last()
                             .value();
-                
-                if(!face)
-                    return;
 
+                console.log("face x " + face.x + ", y " + face.y);
                 console.log("x+width/2 : " + (face.x+(face.width/2)));
                 console.log("y+height/2 : " + (face.y+(face.height/2)));
 
-
                 if (face.x > 0 && face.y > 0) {
+                    console.log("Single face detected");
                     im.preprocess([face.x, face.y], [face.width, face.height]);
                 }
 
