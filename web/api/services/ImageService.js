@@ -38,12 +38,13 @@ module.exports = {
             + "ZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
     },
 
-    createImageObject: function(image, imgid) {
+    createImageObject: function(name, data, imgid) {
         return {
             id: imgid,
-            data: ImageService.testData().toString(),
+            data: data,
+            //data: ImageService.testData().toString(),
             metadata: {
-                name: image.name + imgid,
+                name: name + imgid,
                 imgtype: "",
                 path: {
                     out: "",
@@ -415,8 +416,11 @@ module.exports = {
         var imgfilepath = imgpath.sample + "/" + image.id + ".png";
         console.log("saving png image, path = " + imgfilepath);
 
-        var err = false;
-        cb(err);
+        require('fs').writeFile(imgfilepath, imgdata, 'base64', function() {
+
+          var err = false;
+          cb(err);
+      });
 
         // TODO: consider making writeFileSync
         // require("fs").writeFile(imgfilepath, imgdata.toString(), 'base64', function(err) {

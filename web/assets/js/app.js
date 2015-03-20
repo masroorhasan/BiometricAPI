@@ -42,6 +42,10 @@ define(['angular',
           controller: 'testController',
           css: 'styles/view1.css',
         })
+        .when('/register', {
+          templateUrl: 'partials/test.html',
+          controller: 'registerController',
+        })
         .when('/user/:user', {
           templateUrl: 'partials/user_profile.html',
           controller: 'UserProfileCtrl',

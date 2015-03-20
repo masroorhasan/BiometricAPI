@@ -5,7 +5,7 @@ define(function(require) {
     socket.on("connect", function() {
       $log.info('socket connected');
 
-      socket.request("/image", {}, function(images) {
+      socket.request("/api/image", {}, function(images) {
         $scope.images = images;
       });
 
@@ -21,6 +21,11 @@ define(function(require) {
           $scope.images.remove($scope.images.get(res.data.id));
         }
       });
+
+    });
+    socket.on("captureImage", function(res) {
+      console.log("received captureImage");
+      $scope.$emit('capture-image');
     });
   }];
 });

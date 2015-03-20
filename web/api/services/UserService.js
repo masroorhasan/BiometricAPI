@@ -8,17 +8,17 @@ module.exports = {
     },
 
 
-    createUser: function(id, username, firstname, lastname) {
-        console.log("AuthService.createUser");
-        // var id = AuthService.getId();
+    createUser: function(username, firstname, lastname) {
+        console.log("UserService.createUser");
+        var id = AuthService.getID();
         var user = {
             "index": "cognitech",
             "type": "user",
             "id": id,    // TODO: update to autoincrement
 
-            'username': username, 
-            'firstname': firstname, 
-            "lastname" : lastname, 
+            'username': username,
+            'firstname': firstname,
+            "lastname" : lastname,
             "password": "foobar"
         };
 

@@ -21,13 +21,14 @@ module.exports.sockets = {
         var capture = function(sess, sock) {
             // tell the client to take a picture every 5 secs
             var timer = setInterval(function() {
+                console.log('captureImage on sock: ' + sock.id);
                 sock.emit('captureImage', {});
             }, 5000);
         };
 
-	socket.on('clearFlag', function(res) {
-		ImageService.clear(socket);
-	});
+        socket.on('clearFlag', function(res) {
+          ImageService.clear(socket);
+        });
 
         console.log("connected");
 

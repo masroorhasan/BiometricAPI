@@ -20,8 +20,8 @@ var AuthController = {
         console.log("loginController data.username: "+ data.username);
 
         var img = {
-            id: 0, 
-            data: "data", 
+            id: 0,
+            data: "data",
             name: "name"
         };
 
@@ -48,16 +48,12 @@ var AuthController = {
 
         res.status(200);
     },
-    
-    register: function(req, res) {
-        var data = req.param("data");
-        console.log("registerController data.username: "+ data.username);
 
-        var img = {
-            id: 0, 
-            data: "data", 
-            name: "name"
-        };
+    register: function(req, res) {
+        // array of 10 base64 image data
+        var images_data = req.param("images");
+        var name = req.param("name");
+        console.log("registerController name: " + name.user);
 
         // var img = {
         //     id: SessionService.newImageID(req.socket),
@@ -65,7 +61,7 @@ var AuthController = {
         //     name: req.param("name")
         // };
 
-        if (!img.data) {
+        if (images_data.length < 1) {
             console.log("Error: no image data");
             res.status(200);
             return;
@@ -74,7 +70,7 @@ var AuthController = {
         // img.data = img.data.replace(/^data:image\/png;base64,/, "");
 
         // Create user object
-        var user_obj = UserService.createUser(data.id, data.username, data.firstname, data.lastname);
+        var user_obj = UserService.createUser(name.user, name.first, name.last);
         console.log("user obj username " + user_obj.username);
 
         // Get three images (captures from user)
@@ -82,12 +78,10 @@ var AuthController = {
         var images = [];
 
         // Create image object
-        var id = 0;
-        for(id = 0; id < 9; id++){
-            var image = ImageService.createImageObject(img, id);
-            images[id] = image;
-            // console.log(images[id].data);
-        }
+        require('underscore').each(images_data, function(elem, idx, list) {
+          elem = elem.replace(/^data:image\/png;base64,/, "");
+          images.push(ImageService.createImageObject(user_obj.username, elem, idx));
+        });
 
 
         // AuthService.register:
