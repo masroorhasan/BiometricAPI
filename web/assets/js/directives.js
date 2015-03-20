@@ -50,7 +50,7 @@ define(function(require) {
                           }).
                 success(function(data, status, headers, config) {
                   $log.log('Successful login');
-                  $location.path('/test');
+                  $location.path('/dashboard');
                 }).
                 error(function(data, status, headers, config) {
                   $log.error('Login failed: ' + data);

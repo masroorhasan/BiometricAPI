@@ -32,15 +32,17 @@ define(['angular',
           templateUrl: 'partials/login.html',
           controller: 'LoginCtrl',
         })
-        .when('/view1', {
-          templateUrl: 'partials/view1.html',
-          controller: 'view1Ctrl',
-          css: 'styles/view1.css',
+        .when('/dashboard', {
+          templateUrl: 'partials/userDashboard.html',
+          controller: 'userDashboardCtrl'
         })
         .when('/test', {
           templateUrl: 'partials/test.html',
           controller: 'testController',
-          css: 'styles/view1.css',
+        })
+        .when('/quiz/:id', {
+          templateUrl: 'partials/test-quiz.html',
+          controller: 'quizController',
         })
         .when('/register', {
           templateUrl: 'partials/test.html',

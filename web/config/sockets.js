@@ -20,7 +20,9 @@ module.exports.sockets = {
 
         var capture = function(sess, sock) {
             // tell the client to take a picture every 5 secs
-            var timer = setInterval(function() {
+            if (sock.timer)
+              clearInterval(sock.timer);
+            sock.timer = setInterval(function() {
                 console.log('captureImage on sock: ' + sock.id);
                 sock.emit('captureImage', {});
             }, 5000);
@@ -30,10 +32,22 @@ module.exports.sockets = {
           ImageService.clear(socket);
         });
 
+        socket.on('quiz-start', function(res) {
+          console.log('session started');
+          capture(session, socket);
+          //SessionService.startSession();
+        });
+
+        socket.on('quiz-end', function(res) {
+          console.log('session ended');
+          clearInterval(socket.timer);
+          // SessionService.stopSession()
+        });
+
         console.log("connected");
 
         // start sending events
-        capture(session, socket);
+        //capture(session, socket);
     },
 
     // This custom onDisconnect function will be run each time a socket disconnects
