@@ -12,8 +12,8 @@ define(function(require) {
         require('js/controllers/userDashboardCtrl'))
     .controller('quizController',
         require('js/controllers/quizController'))
-    .controller('LoginCtrl',
-        require('js/controllers/LoginCtrl'));
+    .controller('loginCtrl',
+        require('js/controllers/loginCtrl'));
 
   return Controllers;
 });

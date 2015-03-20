@@ -45,15 +45,15 @@ module.exports = {
                 return true;
 
                 // TODO Error
-                // return Sessions.newSession(username);    
+                // return Sessions.newSession(username);
             } else {
                 console.log("AuthService login: failure");
             }
         });
-       
+
         // if(AuthService.authUser(username, image)) {
         //     console.log("AuthService login: success");
-        //     return Sessions.newSession(username);    
+        //     return Sessions.newSession(username);
         // } else {
         //     console.log("AuthService login: failure");
         // }
@@ -61,7 +61,7 @@ module.exports = {
 
     register: function(user, images, cb) {
         console.log("AuthService.register");
-        
+
         var _ = require("underscore");
 
         // var user_id = 0;
@@ -85,7 +85,7 @@ module.exports = {
 
                 console.log("Image processing starts");
                 var imgtype = {
-                    "id": "auth", 
+                    "id": "auth",
                     "data": "register"
                 };
 
@@ -93,7 +93,7 @@ module.exports = {
                 _.each(images, function(image, id/*, imagelist*/) {
                     ImageService.createImage(image, imgtype, userid, function(err, imageid, image){
                         if(imageid != -1) {
-                            console.log("Image created, id " + imageid);    
+                            console.log("Image created, id " + imageid);
                         } else {
                             console.log("Bad Image");
                         }
@@ -103,7 +103,7 @@ module.exports = {
                 console.log("After underscore images[] loop");
             }
         });
-        
+
         // Create YML
         // Store CV, UserCV mapping
         console.log("outside AuthService.addUser cb");
@@ -116,24 +116,24 @@ module.exports = {
         // console.log("Image processing starts");
         // // Store Image, UserImage
         // _.each(images, function(image, id/*, imagelist*/) {
-            
+
         //     // console.log("image id " + id);
         //     // console.log(image);
         //     var type = {
-        //         "id": "auth", 
+        //         "id": "auth",
         //         "data": "register"
         //     };
-            
+
         //     ImageService.createImage(image, type, user.id, function(err, imageid, image){
         //         console.log("Image created, id " + imageid);
         //     });
         // });
 
-        // 
+        //
         // var cvid = createCV(userid);
-        // 
+        //
         // var usercvid = createUserCV(cvid, userid, function(success) {
-        // 
+        //
         // });
         // return user_id;
     },
@@ -149,8 +149,8 @@ module.exports = {
                 console.log("user saved to ES, id: " + model.id);
                 cb(err, model.id);
             }
-        });   
-        
+        });
+
 
         return 0;
     },
@@ -174,7 +174,7 @@ module.exports = {
             if(!err) {
                 // console.log("found username " + username + " with userid " + user.id);
                 // TODO: Filter after query
-                
+
                 // console.log("user found in authservice: " + user);
                 if(username != user.username) {
                     console.log("Username does not match, found: " + user.username);
@@ -184,10 +184,10 @@ module.exports = {
                 }
 
                 userMatched = true;
-                
+
                 // TODO: Modularize code *********
                 var imgtype = {
-                    "id": "auth", 
+                    "id": "auth",
                     "data": "login"
                 };
 
@@ -199,22 +199,22 @@ module.exports = {
 
                 // Update path
                 var userdir = FileStructureService.getUserDir(user.id);
-                
+
                 var path_out = "";
                 var path_sample  = "";
                 var imgpath = metadata.path;
 
-                path_out += FileStructureService.getAuthDir(user.id) + "/out";
-                path_sample += FileStructureService.getAuthDir(user.id) + "/sample";
+                path_out = FileStructureService.getAuthDir(user.id) + "/out";
+                path_sample = FileStructureService.getAuthDir(user.id) + "/sample";
 
-                imgpath.out += path_out;
-                imgpath.sample += path_sample;
+                imgpath.out = path_out;
+                imgpath.sample = path_sample;
 
                 metadata.path = imgpath;
                 image.metadata = metadata;
 
                 console.log("Image after update: " + image);
-                // TODO: 
+                // TODO:
                 // Write .png and .pgm files
                 // Run training (?) and predictor methods
                 // Check user.id == predictor.id ?
@@ -225,7 +225,7 @@ module.exports = {
                         // Write .pgm file
                         ImageService.writePostDetectionFile(image, function(err, pgmimagefilepath){
                             // console.log("writePostDetectionFile cb");
-                            
+
                             if((!pgmimagefilepath) || (0 === pgmimagefilepath.length)) {
                                 console.log("bad image");
                                 // res.send("OK: Bad Image. Pgm not created.");
@@ -237,7 +237,7 @@ module.exports = {
                             // TODO: Call training and precitor methods
                             console.log("Finished writing pgm file");
                             // var success = userMatched && imagedMatched;
-                            
+
                             // Recognition CODE: *************
                             // Create recognizer object
                             var cv = CVService.cv;
@@ -249,14 +249,14 @@ module.exports = {
                             var pgm_filepath = imgpath.out + "/" + image.id + ".pgm";
 
                             // console.log(pgm_filepath);
-                            
+
 
                             console.log("running recognizer");
                             if(FileStructureService.existsFilePathSync(pgm_filepath)) {
                                 console.log("file exists " + pgm_filepath);
 
-                                cv.readImage(pgm_filepath, function(e, im){    
-                                    
+                                cv.readImage(pgm_filepath, function(e, im){
+
                                     console.log("cv.readImage");
                                     // Image match
                                     var imageMatched = false;
@@ -264,7 +264,7 @@ module.exports = {
                                     // Load global yml
                                     // var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
                                     // facerec.loadSync(globalyml);
-                                    
+
                                     var useryml = FileStructureService.getUserYML(user.id);
                                     console.log("loading user yml " + useryml);
                                     facerec.loadSync(useryml);
@@ -279,7 +279,7 @@ module.exports = {
                                     console.log("imageMatched " + imageMatched);
 
                                     // Update yml
-                                    
+
                                     var matched = ((imageMatched == 1) && (userMatched == 1));
                                     console.log("matched: " + matched);
 
@@ -287,28 +287,28 @@ module.exports = {
                                     if(matched == true) {
                                         modelData = [];
                                         modelData.push([user.id, pgm_filepath]);
-                                        
+
                                         console.log("Updating yml for user ", user.id);
                                         facerec.updateSync(modelData);
                                     }
 
                                     logincb(err, matched);
                                     // return ((imageMatched == 1) && (userMatched == 1));
-                                });    
+                                });
                             }
                             // else {
 
                             //     // TODO: Couldnt find file
                             //     return false;
                             // }
-                        });    
-                    } 
+                        });
+                    }
                     // else {
                     //     return false;
                     // }
-                });  
-                      
-            } 
+                });
+
+            }
             // else {
             //     console.log("username " + username + " not found");
             //     return userMatched;

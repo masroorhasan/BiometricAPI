@@ -419,21 +419,22 @@ module.exports = {
         require('fs').writeFile(imgfilepath, imgdata, 'base64', function() {
 
           var err = false;
-          cb(err);
+          //cb(err);
       });
 
         // TODO: consider making writeFileSync
-        // require("fs").writeFile(imgfilepath, imgdata.toString(), 'base64', function(err) {
-        //     if(err) {
-        //         // imageSaved = false;
-        //         console.log("Failed to save png image");
-        //     } else {
-        //         // imageSaved = true;
-        //         console.log("Saved png image");
-        //         cb(err);
-        //     }
-        //     // callback(imageSaved, current_time, image);
-        // });
+         require("fs").writeFile(imgfilepath, imgdata.toString(), 'base64', function(err) {
+             if(err) {
+                 // imageSaved = false;
+                 console.log("Failed to save png image");
+                 cb(err);
+             } else {
+                 // imageSaved = true;
+                 console.log("Saved png image");
+                 cb(err);
+             }
+             // callback(imageSaved, current_time, image);
+         });
     },
 
     writePostDetectionFile: function(image, cb) {

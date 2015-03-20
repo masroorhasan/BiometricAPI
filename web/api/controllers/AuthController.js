@@ -1,3 +1,5 @@
+var derp = 0;
+
 var AuthController = {
 
     main: function(req, res) {
@@ -16,34 +18,20 @@ var AuthController = {
     },
 
     login: function(req, res) {
-        var data = req.param("data");
-        console.log("loginController data.username: "+ data.username);
+        var data = req.param("image");
+        var username = req.param("name");
+        console.log("loginController data.username: " + username);
 
-        var img = {
-            id: 0,
-            data: "data",
-            name: "name"
-        };
-
-        // var img = {
-        //     id: SessionService.newImageID(req.socket),
-        //     data: req.param("data"),
-        //     name: req.param("name")
-        // };
-
-        if (!img.data) {
+        if (!data) {
             console.log("Error: no image data");
             res.status(200);
             return;
         }
 
-        // img.data = img.data.replace(/^data:image\/png;base64,/, "");        
-        var images = [];
-        images.push(ImageService.createImageObject(img, 9));
+        data = data.replace(/^data:image\/png;base64,/, "");
+        var img = ImageService.createImageObject(username, data, derp++);
 
-        // Test
-        var image = ImageService.createImageObject(img, 9);
-        AuthService.login(data.username, image);
+        AuthService.login(username, img);
         res.send("Response from auth/login");
 
         res.status(200);
@@ -87,7 +75,7 @@ var AuthController = {
         // AuthService.register:
         // Save images (pngs and pgms) - ImageService
         // Save users and images in ES
-        // 
+        //
 
         AuthService.register(user_obj, images, function(err, user_id/*, imageids, usercvid*/){
             if(err) {
@@ -99,7 +87,6 @@ var AuthController = {
                 res.send("Response from auth/register");
             }
         });
-        
 
         res.status(200);
     }

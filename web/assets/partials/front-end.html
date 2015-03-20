@@ -3,10 +3,11 @@
   <video ng-hide="quiz" id="video" width="640" height="480" autoplay></video>
   <canvas id="hiddenCanvas" width="640" height="480" style="display: none;"></canvas>
 
-  <label ng-show='register'>{{ labels.name.user }}</label><input ng-show='register' type="text" ng-model="name.user"/>
+  <label ng-show='register || login'>{{ labels.name.user }}</label><input ng-show='register || login' type="text" ng-model="name.user"/>
   <label ng-show='register'>{{ labels.name.first }}</label><input ng-show='register' type="text" ng-model="name.first"/>
   <label ng-show='register'>{{ labels.name.last }}</label><input ng-show='register' type="text" ng-model="name.last"/>
   <button ng-show='register' class="captureButton" ng-click="$emit('capture-image')">Capture</button>
-  <button ng-show='register' ng-click="$emit('submit')">Login</button>
+  <button ng-show='register' ng-click="$emit('submit')">Register</button>
+  <button ng-show='login' ng-click="$emit('login')">Login</button>
 
 </div>

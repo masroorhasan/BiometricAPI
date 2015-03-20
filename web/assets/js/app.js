@@ -29,8 +29,8 @@ define(['angular',
           templateUrl: 'partials/index.html',
         })
         .when('/login', {
-          templateUrl: 'partials/login.html',
-          controller: 'LoginCtrl',
+          templateUrl: 'partials/test.html',
+          controller: 'loginCtrl',
         })
         .when('/dashboard', {
           templateUrl: 'partials/userDashboard.html',
