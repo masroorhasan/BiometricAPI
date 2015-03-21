@@ -6,6 +6,8 @@ define(function(require) {
   Controllers
     .controller('testController',
         require('js/controllers/testController'))
+    .controller('registerController',
+        require('js/controllers/registerController'))
     .controller('view1Ctrl',
         require('js/controllers/view1Ctrl'))
     .controller('LoginCtrl',

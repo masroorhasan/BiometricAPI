@@ -1,3 +1,14 @@
+var mkdirs = function(path, cb) {
+  /** like mkdir -p to create parent folders if they don't exist
+   */
+  require('mkdirp')(path, function(err) {
+    if (err)
+      return console.error("Failed to create directory: " + path);
+
+    cb();
+  });
+};
+
 module.exports = {
     goodImage: function(sock) {
         var connection = SessionService.getConnection(sock);
@@ -20,23 +31,24 @@ module.exports = {
     },
 
     testData: function() {
-        return "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlz" 
+        return "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlz"
             + "IHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2Yg"
             + "dGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGlu"
             + "dWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRo"
             + "ZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
     },
 
-    createImageObject: function(image, imgid) {
+    createImageObject: function(name, data, imgid) {
         return {
             id: imgid,
-            data: ImageService.testData().toString(),
+            data: data,
+            //data: ImageService.testData().toString(),
             metadata: {
-                name: image.name + imgid,
+                name: name + imgid,
                 imgtype: "",
                 path: {
                     out: "",
-                    sample: ""  
+                    sample: ""
                 },
                 cognidata: {
                     distance: 0,
@@ -55,11 +67,11 @@ module.exports = {
 
         // Update path
         var userdir = FileStructureService.getUserDir(userid);
-        
+
         var path_out = "";
         var path_sample  = "";
         var imgpath = metadata.path;
-        
+
         if(type.id == 'auth' && (type.data == 'register' || 'login')) {
             path_out += FileStructureService.getAuthDir(userid) + "/out";
             path_sample += FileStructureService.getAuthDir(userid) + "/sample";
@@ -143,9 +155,9 @@ module.exports = {
                     trainingData.push([userid, filepath]);
                 });
             }
-            
+
             // TODO***
-            // Use global face rec 
+            // Use global face rec
             // var facerec = RecognizerService.facerec();
 
             // Create recognizer object
@@ -154,33 +166,33 @@ module.exports = {
             // TODO: Use larger threshold for registration?
             console.log("Using singleton facerec");
             var facerec = RecognizerService.facerec();
-            
-            // TRAINING END CODE
-            
 
-            // Global yml 
+            // TRAINING END CODE
+
+
+            // Global yml
             var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
 
             // User yml
             var useryml = FileStructureService.getUserYML(userid);
             var updated = false;
-            
+
             // Check if global yml file exits
             // if(!FileStructureService.checkGlobalYmlSync()) {
             if(!FileStructureService.checkUserYMLSync(userid)) {
-                
+
                 console.log("training...");
                 console.log(trainingData);
                 facerec.trainSync(trainingData);
                 // Create global .yml
                 // console.log("creating global yml" + globalyml);
-                
+
                 // Create user .yml
                 console.log("creating user yml" + useryml);
 
                 // Save global yml
                 // facerec.saveSync(globalyml);
-                
+
                 // Save user yml
                 facerec.saveSync(useryml);
 
@@ -194,16 +206,16 @@ module.exports = {
                 console.log("user yml already exists");
                 var imgmetadata = image.metadata;
                 var imgtype = imgmetadata.imgtype;
-                
+
 
                 // TODO imgtype.data
-                if(imgtype.id == 'auth' /*&& type.data == 'register'*/) {   
+                if(imgtype.id == 'auth' /*&& type.data == 'register'*/) {
                     // trainingData.push([userid, pgm_filepath]);
                     // facerec.updateSync(trainingData);
                     console.log("updating yml with image on registration before loading");
                     facerec.updateSync(trainingData);
                 }
-                    
+
             }
 
             // RECOGNITION CODE: Take the one in predict function
@@ -211,11 +223,11 @@ module.exports = {
             if(FileStructureService.existsFilePathSync(pgm_filepath)) {
                 console.log("file exists " + pgm_filepath);
 
-                cv.readImage(pgm_filepath, function(e, im){    
-                    
+                cv.readImage(pgm_filepath, function(e, im){
+
                     // console.log("loading global yml");
                     // facerec.loadSync(globalyml);
-                    
+
                     console.log("loading user yml");
                     facerec.loadSync(useryml);
 
@@ -224,46 +236,46 @@ module.exports = {
 
                     // console.log("updating face rec of current image");
                     // facerec.updateSync(trainingData);
-                });    
+                });
             }
-            
+
             // TODO
             // if(!updated) {
             //     console.log("updating yml with current image");
             //     facerec.updateSync(trainingData);
             // }
-            
+
             // return;
 
             // var prediction = facerec.predictSync(image); // must be cb value of cv.readImage
             // console.log(prediction);
 
-            
+
             // Update image, session and user table for cv values
             // TODO
             // Update image mapping for id to update cv values
             // Update user mapping for userid to update cv values
-            
-                }); 
+
+                });
             }
-        });   
-        
+        });
+
         console.log("after ImageService.writePNGImageFile(image)");
 
         return;
     },
 
     createAuthImage: function(image, userid, cb) {
-        
+
         // Set ES required fields
         var data = image.data;
         var metadata = image.metadata;
         image.index = "cognitech";
         image.type = "image";
-        
+
         // PUT UserImage mapping for user id
         Image.create(image).exec(function(err, imagemodel) {
-            
+
             console.log("PUT image mapping with id " + imagemodel.id);
 
             cb(err, imagemodel);
@@ -316,9 +328,9 @@ module.exports = {
             //         trainingData.push([userid, filepath]);
             //     });
             // }
-            
+
             // // TODO***
-            // // Use global face rec 
+            // // Use global face rec
             // // var facerec = RecognizerService.facerec();
 
             // // Create recognizer object
@@ -327,13 +339,13 @@ module.exports = {
             // // TODO: Use larger threshold for registration?
             // console.log("Using singleton facerec");
             // var facerec = RecognizerService.facerec();
-            
+
             // // TRAINING END CODE
             // var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
             // var updated = false;
             // // Check if yml file exits
             // if(!FileStructureService.checkGlobalYmlSync()) {
-                
+
             //     console.log("training...");
             //     console.log(trainingData);
             //     facerec.trainSync(trainingData);
@@ -360,7 +372,7 @@ module.exports = {
             // if(FileStructureService.existsFilePathSync(pgm_filepath)) {
             //     console.log("file exists " + pgm_filepath);
 
-            //     cv.readImage(pgm_filepath, function(e, im){    
+            //     cv.readImage(pgm_filepath, function(e, im){
             //         console.log("loading yml");
             //         facerec.loadSync(globalyml);
 
@@ -369,26 +381,26 @@ module.exports = {
 
             //         console.log("updating face rec of current image");
             //         facerec.updateSync(trainingData);
-            //     });    
+            //     });
             // }
-            
+
             // // TODO
             // // if(!updated) {
             // //     console.log("updating yml with current image");
             // //     facerec.updateSync(trainingData);
             // // }
-            
+
             // // return;
 
             // // var prediction = facerec.predictSync(image); // must be cb value of cv.readImage
             // // console.log(prediction);
 
-            
+
             // // Update image, session and user table for cv values
             // // TODO
             // // Update image mapping for id to update cv values
             // // Update user mapping for userid to update cv values
-            
+
         });
     },
 
@@ -404,8 +416,11 @@ module.exports = {
         var imgfilepath = imgpath.sample + "/" + image.id + ".png";
         console.log("saving png image, path = " + imgfilepath);
 
-        var err = false;
-        cb(err);
+        require('fs').writeFile(imgfilepath, imgdata, 'base64', function() {
+
+          var err = false;
+          cb(err);
+      });
 
         // TODO: consider making writeFileSync
         // require("fs").writeFile(imgfilepath, imgdata.toString(), 'base64', function(err) {
@@ -439,9 +454,9 @@ module.exports = {
             console.log("cv.readImage callback");
 
             im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
-                
+
                 console.log("im.detectObject callback");
-                
+
                 // TODO: ********* Hanlde faces == null && faces.length > 1 ********
                 // Test with assets/images/sample/auth/704.png
                 console.log(faces);
@@ -455,7 +470,7 @@ module.exports = {
                 if(faces.length > 1) {
                     console.log("Multiple faces detected: MULTIPLE state");
                 }
-                    
+
                 // Max area of face
                 var face = _.chain(faces)
                             .sortBy(function(coord){
@@ -484,7 +499,7 @@ module.exports = {
                     // goodImage = goodImage || coord.x > -1;
                     // console.log(goodImage);
                     // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
-                    
+
                     // TODO: verify upper bound with resizing
                     if (coord.x > -1) {
                         im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
@@ -506,7 +521,7 @@ module.exports = {
     createSessionImage: function(image, userid, sessionid, cb) {
         // PUT Image mapping for imageid
         // PUT UserImage mapping for userid, imageid
-        
+
         // PUT Session mapping for sessionid
         // PUT UserSession mapping for userid, sessionid
         // PUT SessionImage mapping for imageid, sessionid
@@ -520,7 +535,7 @@ module.exports = {
         var imagefilepath = pgmfilepath; //"../../assets/facerec/facedb/custom/p1/" + 3 + ".pgm";
         console.log("imagefilepath in recognize: " + imagefilepath);
         // TODO***
-        // Use global face rec 
+        // Use global face rec
         var facerec = RecognizerService.facerec();
         // var facerec = cv.FaceRecognizer.createLBPHFaceRecognizer();
         // var facerec = RecognizerService.facerec();
@@ -549,13 +564,13 @@ module.exports = {
             // var filepath = "../../assets/facerec/facedb/custom/p0/" + 3 + ".pgm";
             // console.log("pushing filepath, " + filepath);
             // trainingData.push([0, path.resolve(__dirname, imagefilepath)]);
-            
+
             // trainingData = [];
             // trainingData.push([1, path.resolve(__dirname, imagefilepath)]);
             // facerec.updateSync(trainingData);
 
             // console.log(filepath);
-            // facerec.trainSync(trainingData);   
+            // facerec.trainSync(trainingData);
             // facerec.updateSync(trainingData);
         }
 
@@ -565,7 +580,7 @@ module.exports = {
         cv.readImage(path.resolve(__dirname, imagefilepath), function(err, im) {
 
             console.log("loading xml");
-            facerec.loadSync(xmlfile);        
+            facerec.loadSync(xmlfile);
 
             var prediction = facerec.predictSync(im);
             console.log(prediction);
@@ -578,7 +593,7 @@ module.exports = {
                 trainingData.push([1, path.resolve(__dirname, imagefilepath)]);
                 facerec.updateSync(trainingData);
             }
-                
+
 
             callback(prediction);
         });
@@ -591,11 +606,11 @@ module.exports = {
 
         cv.readImage(image.file, function(err, im) {
             im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
-                
+
                 // TODO ***
                 // Handle faces.length > 1
                 // Handle image dimensions + coords before resize
-                
+
                 console.log(faces);
 
                 if(!faces || _.isEmpty(faces) == true) {
@@ -608,7 +623,7 @@ module.exports = {
                 if(faces.length > 1) {
                     console.log("Multiple faces detected: MULTIPLE state");
                 }
-                    
+
                 // Max area of face
                 var face = _.chain(faces)
                             .sortBy(function(coord){
@@ -642,14 +657,16 @@ module.exports = {
                 */
 
                 var out_pgm = path.resolve(__dirname, '../../assets/images/out/auth/');
-                out_pgm += "/" + current_time + ".pgm"; // UserService.getUserid() + SessionService.getSessionid();
-                console.log("Saving image " + out_pgm);
+                mkdirs(out_pgm, function() {
+                  out_pgm += "/" + current_time + ".pgm"; // UserService.getUserid() + SessionService.getSessionid();
+                  console.log("Saving image " + out_pgm);
 
-                im.save(out_pgm);
-                callback(out_pgm);
+                  im.save(out_pgm);
+                  callback(out_pgm);
+              });
             });
         });
-    }, 
+    },
 
     writePNGFile: function(image, callback){
         var path = require('path');
@@ -660,21 +677,23 @@ module.exports = {
         current_time += currentDate.getMilliseconds();
 
         var imgpath = path.resolve(__dirname, '../../assets/images/sample/auth/');
-        imgpath += "/" + current_time + ".png"; // {session-id_session-date_user-id_img-num}
-        image.file = imgpath;
+        mkdirs(imgpath, function() {
+          imgpath += "/" + current_time + ".png"; // {session-id_session-date_user-id_img-num}
+          image.file = imgpath;
 
-        console.log("Saving png image " + imgpath);
+          console.log("Saving png image " + imgpath);
 
-        require("fs").writeFile(image.file, image.data, 'base64', function(err) {
-            if(err) {
-                imageSaved = false;
-                console.log("Failed to save png image");
-            } else {
-                imageSaved = true;
-                console.log("Saved png image");
-            }
+          require("fs").writeFile(image.file, image.data, 'base64', function(err) {
+              if(err) {
+                  imageSaved = false;
+                  console.log("Failed to save png image");
+              } else {
+                  imageSaved = true;
+                  console.log("Saved png image");
+              }
 
-            callback(imageSaved, current_time, image);
+              callback(imageSaved, current_time, image);
+          });
         });
     },
 

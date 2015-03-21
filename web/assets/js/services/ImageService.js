@@ -3,7 +3,7 @@ define(function(require) {
 
   return function($resource, $log) {
     $log.info('Initializing Image');
-    var baseUrl = 'http://localhost:port/image/:id'; // put in a config file
+    var baseUrl = 'http://localhost:port/api/image/:id'; // put in a config file
 
     return $resource(baseUrl, {
       port: ':1337',

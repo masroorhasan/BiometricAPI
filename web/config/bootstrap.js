@@ -10,6 +10,14 @@
  */
 
 module.exports.bootstrap = function(cb) {
+  sails.config.user_id = 0;
+
+  // folders to create
+  var mkdirp = require('mkdirp');
+  mkdirp('assets/db');
+  mkdirp('assets/images/out/auth');
+  mkdirp('assets/images/sample/auth/');
+
 
   // It's very important to trigger this callack method when you are finished
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)

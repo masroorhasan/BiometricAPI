@@ -3,7 +3,7 @@ define(function(require) {
   var angular = require('angular'),
     Directives = angular.module('fydp.directives', []);
 
-  Directives.directive('frontEnd', function(Image, $log) {
+  Directives.directive('frontEnd', function(Image, $log, $http, $interval, $location) {
     return {
       restrict: 'E',
       templateUrl: 'partials/front-end.html',
@@ -15,14 +15,53 @@ define(function(require) {
       controller: function($scope, $timeout) {
         var $this = this;
         $scope.images = Image.query();
+        $scope.name = {
+          user: 'gogrady',
+          first: 'Greg',
+          last: "O'Grady"
+        };
+
+        $scope.labels = {
+          name: {
+            user: 'Username',
+            first: 'First Name',
+            last: 'Last Name'
+          }
+        };
 
         $scope.addImage = function(image) {
           $scope.images.push(image);
         };
 
+        var submit = function() {
+          // used by registerController
+          $log.log("submit");
+          $scope.images = [];
+          var limit = 1;
+          $interval(function() {
+
+            $scope.ctx.drawImage($scope.video, 0, 0, $scope.canvas.width, $scope.canvas.height);
+            $scope.images.push($scope.canvas.toDataURL());
+            if ($scope.images.length == limit) {
+              $http.post('/api/auth/register',
+                          {
+                            images: $scope.images,
+                            name: $scope.name
+                          }).
+                success(function(data, status, headers, config) {
+                  $log.log('Successful login');
+                  $location.path('/test');
+                }).
+                error(function(data, status, headers, config) {
+                  $log.error('Login failed: ' + data);
+                });
+            }
+
+          }, 500, limit);
+        };
+
         var captureImage = function() {
-          console.log("capture-image emitted");
-          // $log(capture Image)
+          $log.log("capture-image emitted");
           $scope.ctx.drawImage($scope.video, 0, 0, $scope.canvas.width, $scope.canvas.height);
           var dataUrl = $scope.canvas.toDataURL();
           var image = new Image({
@@ -31,9 +70,9 @@ define(function(require) {
             name: 'boop'
           });
           image.$save(function(data) {
-            $log("image save success: %s", data);
+            $log.log("image save success: %s", data);
           }, function(a, b, c, d){
-            $log("image save failed: %s", a);
+            $log.log("image save failed: %s", a);
           });
         };
 
@@ -42,6 +81,7 @@ define(function(require) {
         };
 
         $scope.$on('capture-image', captureImage);
+        $scope.$on('submit', submit);
 
         var connect = function(stream) {
           $scope.video = document.getElementById("video");
@@ -82,7 +122,7 @@ define(function(require) {
           img.src = url;
         };
         setup();
-        captureTimeout();
+        //captureTimeout();
       }
     };
   });

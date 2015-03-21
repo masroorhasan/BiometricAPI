@@ -317,6 +317,10 @@ module.exports = {
         });
     },
 
+    getID: function() {
+      return ++sails.config.user_id;
+    },
+
     logout: function() {
 
     }
