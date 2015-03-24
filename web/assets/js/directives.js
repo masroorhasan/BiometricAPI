@@ -29,6 +29,8 @@ define(function(require) {
           }
         };
 
+        //$scope.inputs = {};
+
         $scope.addImage = function(image) {
           $scope.images.push(image);
         };

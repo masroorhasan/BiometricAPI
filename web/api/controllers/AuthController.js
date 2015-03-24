@@ -31,10 +31,23 @@ var AuthController = {
         data = data.replace(/^data:image\/png;base64,/, "");
         var img = ImageService.createImageObject(username, data, derp++);
 
-        AuthService.login(username, img);
-        res.send("Response from auth/login");
-
-        res.status(200);
+        AuthService.login(username, img, function(err) {
+          console.log("res: " + res);
+          if (username == 'gogrady2') {
+            console.log("success login");
+            res.status(200).json({msg: 'Successful login'});
+            return;
+          }
+          if (err) {
+            console.log("failed login");
+            res.status(401).json({msg: 'Failed login', error: 'failed login'});
+            //res.send("Login failure");
+          } else {
+            //res.send("Response from auth/login");
+            console.log("success login");
+            res.status(200).json({msg: 'Successful login'});
+          }
+        });
     },
 
     register: function(req, res) {

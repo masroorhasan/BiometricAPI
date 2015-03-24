@@ -34,7 +34,7 @@ module.exports = {
         }).exec(function(err, model) {
             if (err) console.log(err);
             // console.log(model);
-            
+
             // TODO Figure out ES filtering, i.e Filter hits by username (value)
             _.each(model, function(usr){
                 // console.log("user: " + usr);
@@ -44,9 +44,12 @@ module.exports = {
                     console.log(usr);
                     console.log("username matched getUserByUsername");
                     cb(err, usr);
+                } else {
+                  console.log("no username match found");
+                  cb("no username match found", null);
                 }
             });
-    
+
         });
 
         return;

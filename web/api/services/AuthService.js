@@ -30,7 +30,7 @@ var Sessions = function() {
 
 module.exports = {
 
-    login: function(username, image) {
+    login: function(username, image, cb) {
         // var image = images[0];
 
         // console.log(images);
@@ -40,15 +40,15 @@ module.exports = {
 
 
         AuthService.authUser(username, image, function(err, matched){
-            if(matched == true) {
+            if(matched == true && !err) {
                 console.log("AuthService login: success");
-                return true;
+                cb();
 
                 // TODO Error
                 // return Sessions.newSession(username);
-            } else {
-                console.log("AuthService login: failure");
             }
+            console.log("AuthService login: failure");
+            cb(true);
         });
 
         // if(AuthService.authUser(username, image)) {
@@ -296,23 +296,14 @@ module.exports = {
                                     // return ((imageMatched == 1) && (userMatched == 1));
                                 });
                             }
-                            // else {
-
-                            //     // TODO: Couldnt find file
-                            //     return false;
-                            // }
                         });
                     }
-                    // else {
-                    //     return false;
-                    // }
+
                 });
 
             }
-            // else {
-            //     console.log("username " + username + " not found");
-            //     return userMatched;
-            // }
+
+            logincb(true, false);
 
         });
     },

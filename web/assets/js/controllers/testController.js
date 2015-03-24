@@ -2,6 +2,16 @@ define(function(require) {
   var angular = require('angular');
   return ['$scope', '$http', '$log', '$interval', 'socket', function($scope, $http, $log, $interval, socket) {
     $scope.images = [];
+
+    $scope.inputs = {
+      name: {
+        user: true,
+        first: true,
+        last: true
+      },
+      test: true
+    };
+
     socket.request("/api/image", {}, function(images) {
       $scope.images = images;
     });

@@ -2,7 +2,15 @@ define(function(require) {
   var angular = require('angular');
   return ['$scope', '$http', '$log', '$interval', 'socket', '$location', function($scope, $http, $log, $interval, socket, $location) {
     $scope.images = [];
-    $scope.quiz = true;
+
+    $scope.inputs = {
+      name: {
+        user: true,
+        first: true,
+        last: true
+      },
+      quiz: true
+    };
 
     socket.emit('quiz-start');
 

@@ -44,6 +44,20 @@ module.exports.sockets = {
           // SessionService.stopSession()
         });
 
+        socket.on('register-start', function(res) {
+          console.log('register-start');
+          // get username here
+          socket.derp = 0;
+          socket.limit = 10;
+          console.log('socket: ' + socket.derp);
+        });
+
+        socket.on('register-pic', function(res) {
+          console.log('register-pic');
+          socket.derp++;
+          console.log('socket: ' + socket.derp);
+        });
+
         console.log("connected");
 
         // start sending events

@@ -1,7 +1,14 @@
 define(function(require) {
   var angular = require('angular');
   return ['$scope', '$http', '$log', '$interval', 'socket', '$location', function($scope, $http, $log, $interval, socket, $location) {
-    $scope.login = true;
+    $scope.inputs = {
+      name: {
+        user: true,
+        first: true,
+        last: true
+      },
+      login: true
+    };
 
     $scope.$on('login', function() {
       // used by registerController
@@ -18,6 +25,7 @@ define(function(require) {
       }).
       error(function(data, status, headers, config) {
         $log.error('Login failed: ' + data);
+        $scope.note = 'login failed';
       });
     });
 
