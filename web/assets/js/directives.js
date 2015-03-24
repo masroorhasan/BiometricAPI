@@ -35,33 +35,6 @@ define(function(require) {
           $scope.images.push(image);
         };
 
-        var submit = function() {
-          // used by registerController
-          $log.log("submit");
-          $scope.images = [];
-          var limit = 1;
-          $interval(function() {
-
-            $scope.ctx.drawImage($scope.video, 0, 0, $scope.canvas.width, $scope.canvas.height);
-            $scope.images.push($scope.canvas.toDataURL());
-            if ($scope.images.length == limit) {
-              $http.post('/api/auth/register',
-                          {
-                            images: $scope.images,
-                            name: $scope.name
-                          }).
-                success(function(data, status, headers, config) {
-                  $log.log('Successful login');
-                  $location.path('/dashboard');
-                }).
-                error(function(data, status, headers, config) {
-                  $log.error('Login failed: ' + data);
-                });
-            }
-
-          }, 500, limit);
-        };
-
         var captureImage = function() {
           $log.log("capture-image emitted");
           $scope.ctx.drawImage($scope.video, 0, 0, $scope.canvas.width, $scope.canvas.height);
@@ -83,7 +56,6 @@ define(function(require) {
         };
 
         $scope.$on('capture-image', captureImage);
-        $scope.$on('submit', submit);
 
         var connect = function(stream) {
           $scope.video = document.getElementById("video");

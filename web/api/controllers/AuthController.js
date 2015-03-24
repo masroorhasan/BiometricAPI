@@ -50,25 +50,23 @@ var AuthController = {
         });
     },
 
+    testreg: function(req, res) {
+      console.log("name: %j", req.param("name"));
+      console.log("params: %j", req.params);
+      res.send(200);
+    },
+
     register: function(req, res) {
         // array of 10 base64 image data
-        var images_data = req.param("images");
-        var name = req.param("name");
-        console.log("registerController name: " + name.user);
-
-        // var img = {
-        //     id: SessionService.newImageID(req.socket),
-        //     data: req.param("data"),
-        //     name: req.param("name")
-        // };
+        var name = req.param('name');
+        var images_data = req.param('images');
+        console.log("registerController name: %j", name);
 
         if (images_data.length < 1) {
             console.log("Error: no image data");
             res.status(200);
             return;
         }
-
-        // img.data = img.data.replace(/^data:image\/png;base64,/, "");
 
         // Create user object
         var user_obj = UserService.createUser(name.user, name.first, name.last);
