@@ -11,6 +11,7 @@
 
 module.exports.bootstrap = function(cb) {
   sails.config.user_id = 0;
+  sails.config.image_id = 0;
 
   // folders to create
   var mkdirp = require('mkdirp');

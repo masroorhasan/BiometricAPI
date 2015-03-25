@@ -506,7 +506,7 @@ module.exports = {
                 // Max area of face
                 var face = _.chain(faces)
                             .sortBy(function(coord){
-                                return coord.x * coord.y;
+                                return coord.width * coord.height;
                             })
                             .last()
                             .value();

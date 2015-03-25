@@ -264,8 +264,6 @@ module.exports = {
 
                 // var matched = ((imageMatched == 1) && (userMatched == 1));
                 // console.log("matched: " + matched);
-
-
                 if (imageMatched == true) {
                   modelData = [];
                   modelData.push([user.id, pgm_filepath]);
@@ -276,6 +274,43 @@ module.exports = {
 
                 logincb(imageMatched);
                 // return ((imageMatched == 1) && (userMatched == 1));
+                
+                
+                var metadata = image.metadata;
+                // console.log(image.metadata);
+                var cognidata = metadata.cognidata;
+
+                var distance = predictiondata.confidence;
+                
+                var predicted = -1;
+                if(predictiondata.id < 0 || predictiondata.id > 1000)
+                    predicted = 0;
+                else
+                    predicted = predictiondata.id;
+                
+                var flag = predictiondata.id != user.id;
+
+                // var cognidata = {};
+                cognidata.distance = distance;
+                cognidata.predicted = predicted;
+                cognidata.flag = flag;
+                // console.log(cognidata);
+
+                metadata.cognidata = cognidata;
+                console.log(metadata);
+                image.metadata = metadata;
+
+                // clear raw data being stored
+                image.data = "";
+                console.log("user.id: " + user.id);
+                console.log(image);
+
+                ImageService.createAuthImage(image, user.id, function(err, model) {
+                    console.log("createAuthImage cb, imageid " + model.id);
+                    // cb(err, model.id, model);
+                });
+
+
               });
             }
           });

@@ -29,9 +29,9 @@ define(function(require) {
           socket.emit('register-end', {
             name: $scope.name
           });
-          $location.path('/dashboard');
+          $location.path('/login');
         }
-      }, 500, limit);
+      }, 100, limit);
     });
   }];
 });
