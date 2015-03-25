@@ -119,7 +119,7 @@ define(function(require) {
   Directives.directive('myHeader', function(Image, $log, $http, $interval, $location) {
     return {
       restrict: 'E',
-      templateUrl: 'partials/front-end.html'
+      templateUrl: 'partials/my-header.html'
     }
   });
 
