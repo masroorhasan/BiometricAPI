@@ -11,6 +11,11 @@ define(function(require) {
 
     $scope.user = UserService.getUser();
     $scope.matched = null;
+    $scope.$watch('matched', function(val) {
+      $scope.color = {
+        color: val ? 'green' : 'red'
+      };
+    });
 
     socket.on("captureImage", function(res) {
       console.log("received captureImage");
