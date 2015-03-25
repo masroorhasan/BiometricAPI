@@ -5,9 +5,6 @@ define(function(require) {
 
     $scope.inputs = {
       name: {
-        user: true,
-        first: true,
-        last: true
       },
       quiz: true
     };

@@ -105,17 +105,19 @@ define(function(require) {
     return {
       restrict: 'E',
       templateUrl: 'partials/my-breadcrumb.html',
-      link: function($scope, $element, attrs) {
-        $scope.video = $element.find('video');
-        $scope.canvas = $element.find('canvas')[0];
-        $scope.ctx = $scope.canvas.getContext('2d');
-      },
       controller: function($scope, $location) {
         var path = $location.path().split("/");
         /*var breadcrumbs = _.map(path, function(value, index, list) {
           return {
             url: path.join*/
       }
+    }
+  });
+
+  Directives.directive('myHeader', function(Image, $log, $http, $interval, $location) {
+    return {
+      restrict: 'E',
+      templateUrl: 'partials/front-end.html'
     }
   });
 
