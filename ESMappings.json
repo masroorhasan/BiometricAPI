@@ -1,0 +1,108 @@
+PUT User Mapping:
+
+http://localhost:9200/cognitech/_mapping/user
+{
+    "user" : {
+        "properties" : {
+            "username" : {"type" : "string", "store" : true },
+            "firstname" : {"type" : "string", "store" : true },
+            "lastname" : {"type" : "string", "store" : true }
+        }
+    }
+}
+
+
+http://localhost:9200/cognitech/_mapping/image
+PUT Image Mapping:
+{
+    "image" : {
+        "properties": {
+            "distance": {"type" : "double", "store" : true },
+            "predicted": {"type" : "double", "store" : true },
+            "flag": {"type" : "boolean", "store" : true },
+            "metadata": {
+                "type": "nested",
+                "store": true,
+                "properties": {
+                    "name": {"type" : "string", "store" : true },
+                    "imgtype": {"type" : "string", "store" : true },
+                    "path": {
+                        "type": "nested",
+                        "store": true,
+                        "properties": {
+                            "out": {"type" : "string", "store" : true },
+                            "sample": {"type" : "string", "store" : true }
+                        }
+                    },
+                    "cognidata": {
+                        "type": "nested",
+                        "store": true,
+                        "properties": {
+                            "distance": {"type" : "double", "store" : true },
+                            "predicted": {"type" : "double", "store" : true },
+                            "flag": {"type" : "boolean", "store" : true }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+USER
+{
+    id: id
+    first..
+    last..
+    username
+}
+
+IMAGE
+{
+    id: 0,
+    data: "base-64 encoded data",
+    metadata: {
+        name: "0",
+        imgtype: "auth",
+        path: {
+            out: "cognitech/db/0/auth/out/0.pgm",
+            sample: "cognitech/db/0/auth/sample/0.png"
+        },
+        cognidata: {
+            distance: 0.6965,
+            predicted: 2,
+            flag: false
+        }
+    }    
+}
+
+
+SESSION
+id: 
+date: 
+start:
+end:
+metadata: {
+    user: { firstname, lastname, username, userid }
+}
+
+http://localhost:9200/cognitech/_mapping/userimage
+PUT UserImage Mapping:
+{
+    "userimage": {
+        "properties": {
+            "userid": {"type" : "double", "store" : true },
+            "imageid": {"type" : "double", "store" : true }
+        }
+    }
+}
+
+PUT http://localhost:9200/cognitech/_mapping/user
+{
+    "data": {
+        "id": 0
+        "firstname": "masroor",
+        "lastname": "hasan",
+        "username": "m22hasan"
+    }
+}

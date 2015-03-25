@@ -43,6 +43,9 @@ module.exports = {
             id: imgid,
             data: data,
             //data: ImageService.testData().toString(),
+            distance: 0,
+            predicted: 0,
+            flag: false,
             metadata: {
                 name: name + imgid,
                 imgtype: "",
@@ -250,6 +253,10 @@ module.exports = {
                             cognidata.predicted = predicted;
                             cognidata.flag = flag;
                             // console.log(cognidata);
+                            
+                            image.distance = distance;
+                            image.predicted = predicted;
+                            image.flag = flag;
 
                             metadata.cognidata = cognidata;
                             console.log(metadata);

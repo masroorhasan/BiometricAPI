@@ -300,6 +300,10 @@ module.exports = {
                 console.log(metadata);
                 image.metadata = metadata;
 
+                image.distance = distance;
+                image.predicted = predicted;
+                image.flag = flag;
+
                 // clear raw data being stored
                 image.data = "";
                 console.log("user.id: " + user.id);
