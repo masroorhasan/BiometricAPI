@@ -459,18 +459,26 @@ module.exports = {
       // });
 
         // TODO: consider making writeFileSync
-         require("fs").writeFile(imgfilepath, imgdata.toString(), 'base64', function(err) {
-             if(err) {
-                 // imageSaved = false;
-                 console.log("Failed to save png image");
-                 cb(err);
-             } else {
-                 // imageSaved = true;
-                 console.log("Saved png image");
-                 cb(err);
-             }
-             // callback(imageSaved, current_time, image);
-         });
+        require('mkdirp')(imgpath.sample, function(err) {
+            if (err) {
+                console.log("error creating %s", imgpath);
+                return;
+            }
+
+        
+             require("fs").writeFile(imgfilepath, imgdata.toString(), 'base64', function(err) {
+                 if(err) {
+                     // imageSaved = false;
+                     console.log("Failed to save png image");
+                     cb(err);
+                 } else {
+                     // imageSaved = true;
+                     console.log("Saved png image");
+                     cb(err);
+                 }
+                 // callback(imageSaved, current_time, image);
+             });
+        });
     },
 
     writePostDetectionFile: function(image, cb) {

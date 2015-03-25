@@ -247,90 +247,94 @@ module.exports = {
 
 
             console.log("running recognizer");
-            if (FileStructureService.existsFilePathSync(pgm_filepath)) {
-              console.log("file exists " + pgm_filepath);
+            require('mkdirp')(imgpath.out, function(err) {
+                if (err)
+                    console.log(err);
+                if (FileStructureService.existsFilePathSync(pgm_filepath)) {
+                  console.log("file exists " + pgm_filepath);
 
-              cv.readImage(pgm_filepath, function(e, im) {
+                  cv.readImage(pgm_filepath, function(e, im) {
 
-                console.log("cv.readImage");
-                // Image match
-                var imageMatched = false;
+                    console.log("cv.readImage");
+                    // Image match
+                    var imageMatched = false;
 
-                // Load global yml
-                // var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
-                // facerec.loadSync(globalyml);
+                    // Load global yml
+                    // var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
+                    // facerec.loadSync(globalyml);
 
-                var useryml = FileStructureService.getUserYML(user.id);
-                console.log("loading user yml " + useryml);
-                facerec.loadSync(useryml);
+                    var useryml = FileStructureService.getUserYML(user.id);
+                    console.log("loading user yml " + useryml);
+                    facerec.loadSync(useryml);
 
-                var predictiondata = facerec.predictSync(im);
-                console.log(predictiondata);
+                    var predictiondata = facerec.predictSync(im);
+                    console.log(predictiondata);
 
-                imageMatched = user.id == predictiondata.id;
+                    imageMatched = user.id == predictiondata.id;
 
-                console.log("user.id " + user.id);
-                console.log("predictiondata.id " + predictiondata.id);
-                console.log("imageMatched " + imageMatched);
+                    console.log("user.id " + user.id);
+                    console.log("predictiondata.id " + predictiondata.id);
+                    console.log("imageMatched " + imageMatched);
 
-                // Update yml
+                    // Update yml
 
-                // var matched = ((imageMatched == 1) && (userMatched == 1));
-                // console.log("matched: " + matched);
-                if (imageMatched == true) {
-                  modelData = [];
-                  modelData.push([user.id, pgm_filepath]);
+                    // var matched = ((imageMatched == 1) && (userMatched == 1));
+                    // console.log("matched: " + matched);
+                    if (imageMatched == true) {
+                      modelData = [];
+                      modelData.push([user.id, pgm_filepath]);
 
-                  console.log("Updating yml for user ", user.id);
-                  facerec.updateSync(modelData);
+                      console.log("Updating yml for user ", user.id);
+                      facerec.updateSync(modelData);
+                    }
+
+                    logincb(imageMatched ? user : null);
+                    // return ((imageMatched == 1) && (userMatched == 1));
+
+
+                    var metadata = image.metadata;
+                    // console.log(image.metadata);
+                    var cognidata = metadata.cognidata;
+
+                    var distance = predictiondata.confidence;
+
+                    var predicted = -1;
+                    if(predictiondata.id < 0 || predictiondata.id > 1000)
+                        predicted = 0;
+                    else
+                        predicted = predictiondata.id;
+
+                    var flag = predictiondata.id != user.id;
+
+                    // var cognidata = {};
+                    cognidata.distance = distance;
+                    cognidata.predicted = predicted;
+                    cognidata.flag = flag;
+                    // console.log(cognidata);
+
+                    metadata.cognidata = cognidata;
+                    console.log(metadata);
+                    image.metadata = metadata;
+
+                    image.distance = distance;
+                    image.predicted = predicted;
+                    image.flag = flag;
+
+                    // clear raw data being stored
+                    image.data = "";
+                    console.log("user.id: " + user.id);
+                    console.log(image);
+
+
+
+                    ImageService.createAuthImage(image, user.id, function(err, model) {
+                            console.log("createAuthImage cb, imageid " + model.id);
+                            // cb(err, model.id, model);
+                        });
+
+                  });
                 }
-
-                logincb(imageMatched ? user : null);
-                // return ((imageMatched == 1) && (userMatched == 1));
-
-
-                var metadata = image.metadata;
-                // console.log(image.metadata);
-                var cognidata = metadata.cognidata;
-
-                var distance = predictiondata.confidence;
-
-                var predicted = -1;
-                if(predictiondata.id < 0 || predictiondata.id > 1000)
-                    predicted = 0;
-                else
-                    predicted = predictiondata.id;
-
-                var flag = predictiondata.id != user.id;
-
-                // var cognidata = {};
-                cognidata.distance = distance;
-                cognidata.predicted = predicted;
-                cognidata.flag = flag;
-                // console.log(cognidata);
-
-                metadata.cognidata = cognidata;
-                console.log(metadata);
-                image.metadata = metadata;
-
-                image.distance = distance;
-                image.predicted = predicted;
-                image.flag = flag;
-
-                // clear raw data being stored
-                image.data = "";
-                console.log("user.id: " + user.id);
-                console.log(image);
-
-
-
-                ImageService.createAuthImage(image, user.id, function(err, model) {
-                        console.log("createAuthImage cb, imageid " + model.id);
-                        // cb(err, model.id, model);
-                    });
-
-              });
-            }
+            });
           });
         }
       });

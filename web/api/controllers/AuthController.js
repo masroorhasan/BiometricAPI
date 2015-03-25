@@ -52,33 +52,38 @@ var AuthController = {
 
     session: function(req, res) {
         var data = req.param("image");
-        var username = req.param("name");
+        var username = req.param("username");
         console.log("loginController data.username: " + username);
 
         if (!data) {
             console.log("Error: no image data");
-            res.status(200);
+            res.status(401).json({msg: 'no image data'});
             return;
         }
 
         data = data.replace(/^data:image\/png;base64,/, "");
         var img = ImageService.createImageObject(username, data, derp++);
 
-        var metadata = image.metadata;
+        var metadata = img.metadata;
         var imgtype = "session";
         metadata.imgtype = imgtype;
 
-        image.metadata = metadata;
+        img.metadata = metadata;
 
-        AuthService.authUser(username, image, function(user) {
+        var found = null;
+
+        AuthService.authUser(username, img, function(user) {
           console.log("AuthService login: %s", user ? "success" : "failure");
           console.log("matched: %s", user ? true : false);
 
           // cb(user);
           if(user) {
-            res.status(200).json({msg: 'Matched', user: user});
+            console.log('sessions success');
+            res.status(200).json({msg: 'Matched', user: user });
+          } else {
+            console.log('session failed');
+            res.status(200).json({msg: 'No Match', user: user });
           }
-
         });
     },
 

@@ -37,9 +37,11 @@ define(function(require) {
 
         var captureImage = function() {
           $log.log("capture-image emitted");
+
           $scope.ctx.drawImage($scope.video, 0, 0, $scope.canvas.width, $scope.canvas.height);
           var dataUrl = $scope.canvas.toDataURL();
-          var image = new Image({
+          $scope.$emit('send-image', {dataUrl});
+          /*var image = new Image({
             id: null,
             data: dataUrl,
             name: 'boop'
@@ -48,7 +50,7 @@ define(function(require) {
             $log.log("image save success: %s", data);
           }, function(a, b, c, d) {
             $log.log("image save failed: %s", a);
-          });
+          });*/
         };
 
         var captureTimeout = function() {
