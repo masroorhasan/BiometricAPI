@@ -5,14 +5,13 @@ define(function() {
       name: 'test quiz',
       url: '/quiz/1'
     });
-
     $scope.user = UserService.getUser();
 
-    socket.on('user', function(user) {
-      UserService.setUser(user);
-      $scope.user = user;
+    socket.on('user', function(data) {
+      UserService.setUser(data);
+      $scope.user = data;
     });
-
     socket.emit('user');
+
   };
 });

@@ -19,7 +19,7 @@ define(function(require) {
       }).
       success(function(data, status, headers, config) {
         $log.log('Successful login');
-        UserService.setUser(data.user);
+        //UserService.setUser(data.user);
         $location.path('/dashboard');
       }).
       error(function(data, status, headers, config) {

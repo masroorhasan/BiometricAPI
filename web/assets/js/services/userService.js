@@ -1,7 +1,7 @@
 define(function(require) {
   'use strict';
 
-  return function($resource, $log) {
+  return function($resource, $log, socket) {
     var user = {};
 
     return {

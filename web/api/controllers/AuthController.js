@@ -45,6 +45,7 @@ var AuthController = {
           } else {
             //res.send("Response from auth/login");
             console.log("success login");
+            req.socket.user = user;
             res.status(200).json({msg: 'Successful login', user: user});
           }
         });

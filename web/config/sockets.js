@@ -100,6 +100,7 @@ module.exports.sockets = {
     });
 
     socket.on('user', function() {
+      console.log('send user: %j', socket.user);
       socket.emit('user', socket.user);
     });
 
