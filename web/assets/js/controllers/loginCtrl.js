@@ -20,6 +20,7 @@ define(function(require) {
       success(function(data, status, headers, config) {
         $log.log('Successful login');
         //UserService.setUser(data.user);
+        socket.emit('set-user', $scope.name.user);
         $location.path('/dashboard');
       }).
       error(function(data, status, headers, config) {

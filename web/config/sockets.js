@@ -104,6 +104,12 @@ module.exports.sockets = {
       socket.emit('user', socket.user);
     });
 
+    socket.on('set-user', function(username) {
+      UserService.getUserByUsername(username, function(user) {
+        socket.user = user;
+      });
+    });
+
     console.log("connected");
 
     // start sending events
