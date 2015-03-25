@@ -46,13 +46,13 @@ define(function(require) {
           });
           image.$save(function(data) {
             $log.log("image save success: %s", data);
-          }, function(a, b, c, d){
+          }, function(a, b, c, d) {
             $log.log("image save failed: %s", a);
           });
         };
 
         var captureTimeout = function() {
-            $timeout(captureImage, Math.floor((Math.random() * 10000) + 5000)); // 5-10 second interval
+          $timeout(captureImage, Math.floor((Math.random() * 10000) + 5000)); // 5-10 second interval
         };
 
         $scope.$on('capture-image', captureImage);
@@ -99,6 +99,24 @@ define(function(require) {
         //captureTimeout();
       }
     };
+  });
+
+  Directives.directive('myBreadcrumb', function($log, $http, $interval, $location) {
+    return {
+      restrict: 'E',
+      templateUrl: 'partials/my-breadcrumb.html',
+      link: function($scope, $element, attrs) {
+        $scope.video = $element.find('video');
+        $scope.canvas = $element.find('canvas')[0];
+        $scope.ctx = $scope.canvas.getContext('2d');
+      },
+      controller: function($scope, $location) {
+        var path = $location.path().split("/");
+        /*var breadcrumbs = _.map(path, function(value, index, list) {
+          return {
+            url: path.join*/
+      }
+    }
   });
 
   return Directives;

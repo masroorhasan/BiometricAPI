@@ -2,7 +2,7 @@ require.config({
   //urlArgs: "bust=" + (new Date()).getTime(),
   paths: {
     'jquery': '//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min',
-    'bootstrap': '//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min',
+    'bootstrap': '//netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min',
     'socket.io': '//cdn.socket.io/socket.io-1.0.0',
     'sails.io': 'js/dependencies/sails.io',
     'angular': 'bower_components/angular/angular',
