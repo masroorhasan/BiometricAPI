@@ -1,57 +1,53 @@
 module.exports = {
-    getUser: function(req) {
-        /**
-         * Return the unique username of the logged in
-         * user given the request object
-         */
-        return "masroor";
-    },
+  getUser: function(req) {
+    /**
+     * Return the unique username of the logged in
+     * user given the request object
+     */
+    return "masroor";
+  },
 
 
-    createUser: function(username, firstname, lastname) {
-        console.log("UserService.createUser");
-        var id = AuthService.getID();
-        var user = {
-            "index": "cognitech",
-            "type": "user",
-            "id": id,    // TODO: update to autoincrement
+  createUser: function(username, firstname, lastname) {
+    console.log("UserService.createUser");
+    var id = AuthService.getID();
+    var user = {
+      "index": "cognitech",
+      "type": "user",
+      "id": id, // TODO: update to autoincrement
 
-            'username': username,
-            'firstname': firstname,
-            "lastname" : lastname,
-            "password": "foobar"
-        };
+      'username': username,
+      'firstname': firstname,
+      "lastname": lastname,
+      "password": "foobar"
+    };
 
-        return user;
-    },
+    return user;
+  },
 
-    getUserByUsername: function(value, cb) {
-        // console.log(value.toString());
-        // console.log('getUserByUsername, username ' + value);
-        User.find({
-          // id: '',
-          username: value.toString()
-        }).exec(function(err, model) {
-            if (err) console.log(err);
-            // console.log(model);
+  getUserByUsername: function(username) {
+    // console.log(value.toString());
+    // console.log('getUserByUsername, username ' + value);
+    return User.find({
+      // id: '',
+      username: username.toString()
+    }).exec(function(err, model) {
+      if (err) console.log(err);
 
-            // TODO Figure out ES filtering, i.e Filter hits by username (value)
-            _.each(model, function(usr){
-                // console.log("user: " + usr);
-                var usrname = _.property('username')(usr);
-                console.log("usrname from usr property " + usrname);
-                if(usrname.toString() === value.toString()) {
-                    console.log(usr);
-                    console.log("username matched getUserByUsername");
-                    cb(err, usr);
-                } else {
-                  console.log("no username match found");
-                  cb("no username match found", null);
-                }
-            });
+      // TODO Figure out ES filtering, i.e Filter hits by username (value)
+      var user = _.findWhere(model, {
+        username: username
+      });
+      if (user) {
+        console.log(user);
+        console.log("username matched getUserByUsername");
+      } else {
+        console.log("no username match found");
+      }
+      return user;
 
-        });
+    });
 
-        return;
-    }
+    return;
+  }
 };
