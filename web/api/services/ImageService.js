@@ -82,10 +82,10 @@ module.exports = {
             metadata.path = imgpath;
             image.metadata = metadata;
 
-            ImageService.createAuthImage(image, userid, function(err, model) {
-                console.log("createAuthImage cb, imageid " + model.id);
-                cb(err, model.id, model);
-            });
+            // ImageService.createAuthImage(image, userid, function(err, model) {
+            //     console.log("createAuthImage cb, imageid " + model.id);
+            //     cb(err, model.id, model);
+            // });
 
         } else if(type.id == 'session' && sessionid != null) {
             path_out += FileStructureService.getSessionDirByID(userid, type.data) + "/out";
@@ -97,10 +97,10 @@ module.exports = {
             metadata.path = imgpath;
             image.metadata = metadata;
 
-            ImageService.createSessionImage(image, userid, sessionid, function(err, imageid){
-                console.log("createSessionImage cb, imageid " + model.id);
-                cb(err, imageid);
-            });
+            // ImageService.createSessionImage(image, userid, sessionid, function(err, imageid){
+            //     console.log("createSessionImage cb, imageid " + model.id);
+            //     cb(err, imageid);
+            // });
         }
 
         // TODO *** Double check
@@ -120,141 +120,170 @@ module.exports = {
                     }
 
                     // If auth = register
-            // train -> save -> load -> predict -> update current
-            // else auth = login
-            // load -> predict -> update current
+                    // train -> save -> load -> predict -> update current
+                    // else auth = login
+                    // load -> predict -> update current
 
-            // Input to training: image object
-            // TRAINING CODE
-            var img_pgm = image;
-            var pgm_path = img_pgm.metadata.path;
-            var pgm_filepath = pgm_path.out + "/" + img_pgm.id + ".pgm";
-            // console.log("current image, " + imagemodel.id);
+                    // Input to training: image object
+                    // TRAINING CODE
+                    var img_pgm = image;
+                    var pgm_path = img_pgm.metadata.path;
+                    var pgm_filepath = pgm_path.out + "/" + img_pgm.id + ".pgm";
+                    // console.log("current image, " + imagemodel.id);
 
-            console.log("Populating training data");
-            var trainingData = [];
+                    console.log("Populating training data");
+                    var trainingData = [];
 
-            if(FileStructureService.existsFilePathSync(pgm_filepath)) {
-                console.log("Adding file to training data: " + pgm_filepath);
-                trainingData.push([userid, pgm_filepath]);
-            } else {
-                // Should be part of else statement
-                // Get all images to train
-                var auth_pgm_list = [];
-                // TODO: while (auth_pgm_list == null)
-                FileStructureService.getFilesRecursiveSync(pgm_path.out, auth_pgm_list, false);
-                console.log("pgm list");
-                console.log(auth_pgm_list);
+                    if(FileStructureService.existsFilePathSync(pgm_filepath)) {
+                        console.log("Adding file to training data: " + pgm_filepath);
+                        trainingData.push([userid, pgm_filepath]);
+                    } else {
+                        // Should be part of else statement
+                        // Get all images to train
+                        var auth_pgm_list = [];
+                        // TODO: while (auth_pgm_list == null)
+                        FileStructureService.getFilesRecursiveSync(pgm_path.out, auth_pgm_list, false);
+                        console.log("pgm list");
+                        console.log(auth_pgm_list);
 
-                // Populate training data mapped to userid
-                _.each(auth_pgm_list, function(filepath, index){
-                    console.log("pgm index: " + index);
-                    console.log("pgm path: " + filepath);
+                        // Populate training data mapped to userid
+                        _.each(auth_pgm_list, function(filepath, index){
+                            console.log("pgm index: " + index);
+                            console.log("pgm path: " + filepath);
 
-                    console.log([userid, filepath]);
-                    trainingData.push([userid, filepath]);
-                });
-            }
+                            console.log([userid, filepath]);
+                            trainingData.push([userid, filepath]);
+                        });
+                    }
 
-            // TODO***
-            // Use global face rec
-            // var facerec = RecognizerService.facerec();
+                    // TODO***
+                    // Use global face rec
+                    // var facerec = RecognizerService.facerec();
 
-            // Create recognizer object
-            var cv = CVService.cv;
-            // var facerec = cv.FaceRecognizer.createLBPHFaceRecognizer();
-            // TODO: Use larger threshold for registration?
-            console.log("Using singleton facerec");
-            var facerec = RecognizerService.facerec();
+                    // Create recognizer object
+                    var cv = CVService.cv;
+                    // var facerec = cv.FaceRecognizer.createLBPHFaceRecognizer();
+                    // TODO: Use larger threshold for registration?
+                    console.log("Using singleton facerec");
+                    var facerec = RecognizerService.facerec();
 
-            // TRAINING END CODE
-
-
-            // Global yml
-            var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
-
-            // User yml
-            var useryml = FileStructureService.getUserYML(userid);
-            var updated = false;
-
-            // Check if global yml file exits
-            // if(!FileStructureService.checkGlobalYmlSync()) {
-            if(!FileStructureService.checkUserYMLSync(userid)) {
-
-                console.log("training...");
-                console.log(trainingData);
-                facerec.trainSync(trainingData);
-                // Create global .yml
-                // console.log("creating global yml" + globalyml);
-
-                // Create user .yml
-                console.log("creating user yml" + useryml);
-
-                // Save global yml
-                // facerec.saveSync(globalyml);
-
-                // Save user yml
-                facerec.saveSync(useryml);
+                    // TRAINING END CODE
 
 
-                console.log("updating yml with first image");
-                facerec.updateSync(trainingData);
+                    // Global yml
+                    var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
 
-                updated = true;
-            } else {
-                // console.log("global yml already exists");
-                console.log("user yml already exists");
-                var imgmetadata = image.metadata;
-                var imgtype = imgmetadata.imgtype;
+                    // User yml
+                    var useryml = FileStructureService.getUserYML(userid);
+                    var updated = false;
 
+                    // Check if global yml file exits
+                    // if(!FileStructureService.checkGlobalYmlSync()) {
+                    if(!FileStructureService.checkUserYMLSync(userid)) {
 
-                // TODO imgtype.data
-                if(imgtype.id == 'auth' /*&& type.data == 'register'*/) {
-                    // trainingData.push([userid, pgm_filepath]);
-                    // facerec.updateSync(trainingData);
-                    console.log("updating yml with image on registration before loading");
-                    facerec.updateSync(trainingData);
-                }
+                        console.log("training...");
+                        console.log(trainingData);
+                        facerec.trainSync(trainingData);
+                        // Create global .yml
+                        // console.log("creating global yml" + globalyml);
 
-            }
+                        // Create user .yml
+                        console.log("creating user yml" + useryml);
 
-            // RECOGNITION CODE: Take the one in predict function
-            console.log("running recognizer");
-            if(FileStructureService.existsFilePathSync(pgm_filepath)) {
-                console.log("file exists " + pgm_filepath);
+                        // Save global yml
+                        // facerec.saveSync(globalyml);
 
-                cv.readImage(pgm_filepath, function(e, im){
-
-                    // console.log("loading global yml");
-                    // facerec.loadSync(globalyml);
-
-                    console.log("loading user yml");
-                    facerec.loadSync(useryml);
-
-                    var predictiondata = facerec.predictSync(im);
-                    console.log(predictiondata);
-
-                    // console.log("updating face rec of current image");
-                    // facerec.updateSync(trainingData);
-                });
-            }
-
-            // TODO
-            // if(!updated) {
-            //     console.log("updating yml with current image");
-            //     facerec.updateSync(trainingData);
-            // }
-
-            // return;
-
-            // var prediction = facerec.predictSync(image); // must be cb value of cv.readImage
-            // console.log(prediction);
+                        // Save user yml
+                        facerec.saveSync(useryml);
 
 
-            // Update image, session and user table for cv values
-            // TODO
-            // Update image mapping for id to update cv values
-            // Update user mapping for userid to update cv values
+                        console.log("updating yml with first image");
+                        facerec.updateSync(trainingData);
+
+                        updated = true;
+                    } else {
+                        // console.log("global yml already exists");
+                        console.log("user yml already exists");
+                        var imgmetadata = image.metadata;
+                        var imgtype = imgmetadata.imgtype;
+
+
+                        // TODO imgtype.data
+                        if(imgtype.id == 'auth' /*&& type.data == 'register'*/) {
+                            // trainingData.push([userid, pgm_filepath]);
+                            // facerec.updateSync(trainingData);
+                            console.log("updating yml with image on registration before loading");
+                            facerec.updateSync(trainingData);
+                        }
+
+                    }
+
+                    // RECOGNITION CODE: Take the one in predict function
+                    console.log("running recognizer");
+                    if(FileStructureService.existsFilePathSync(pgm_filepath)) {
+                        console.log("file exists " + pgm_filepath);
+
+                        cv.readImage(pgm_filepath, function(e, im){
+
+                            // console.log("loading global yml");
+                            // facerec.loadSync(globalyml);
+
+                            console.log("loading user yml");
+                            facerec.loadSync(useryml);
+
+                            var predictiondata = facerec.predictSync(im);
+                            console.log(predictiondata);
+
+                            // console.log("updating face rec of current image");
+                            // facerec.updateSync(trainingData);
+                            
+                            var metadata = image.metadata;
+                            // console.log(image.metadata);
+                            var cognidata = metadata.cognidata;
+
+                            var distance = predictiondata.confidence;
+                            var predicted = predictiondata.id;
+                            var flag = predictiondata.id != userid;
+
+                            // var cognidata = {};
+                            cognidata.distance = distance;
+                            cognidata.predicted = predicted;
+                            cognidata.flag = flag;
+                            // console.log(cognidata);
+
+                            metadata.cognidata = cognidata;
+                            console.log(metadata);
+                            image.metadata = metadata;
+
+                            // clear raw data being stored
+                            image.data = "";
+                            console.log("userid: " + userid);
+                            console.log(image);
+
+                            ImageService.createAuthImage(image, userid, function(err, model) {
+                                console.log("createAuthImage cb, imageid " + model.id);
+                                cb(err, model.id, model);
+                            });
+
+                        });
+                    }
+
+                    // TODO
+                    // if(!updated) {
+                    //     console.log("updating yml with current image");
+                    //     facerec.updateSync(trainingData);
+                    // }
+
+                    // return;
+
+                    // var prediction = facerec.predictSync(image); // must be cb value of cv.readImage
+                    // console.log(prediction);
+
+
+                    // Update image, session and user table for cv values
+                    // TODO
+                    // Update image mapping for id to update cv values
+                    // Update user mapping for userid to update cv values
 
                 });
             }
@@ -416,11 +445,11 @@ module.exports = {
         var imgfilepath = imgpath.sample + "/" + image.id + ".png";
         console.log("saving png image, path = " + imgfilepath);
 
-        require('fs').writeFile(imgfilepath, imgdata, 'base64', function() {
+      //   require('fs').writeFile(imgfilepath, imgdata, 'base64', function() {
 
-          var err = false;
-          //cb(err);
-      });
+      //     var err = false;
+      //     //cb(err);
+      // });
 
         // TODO: consider making writeFileSync
          require("fs").writeFile(imgfilepath, imgdata.toString(), 'base64', function(err) {
@@ -453,6 +482,8 @@ module.exports = {
         cv.readImage(imgfilepath, function(err, im) {
 
             console.log("cv.readImage callback");
+            if(err)
+                console.log("err in readImage: " + err);
 
             im.detectObject(cv.LBP_FRONTALFACE_CASCADE, {}, function(err, faces) {
 
@@ -488,25 +519,6 @@ module.exports = {
                     console.log("Single face detected");
                     im.preprocess([face.x, face.y], [face.width, face.height]);
                 }
-
-                /*
-                // var goodImage = false;
-                for (var i = 0; i < faces.length; i++) {
-                    console.log("faces[" + i + "].x: " + faces[i].x);
-                    var coord = faces[i];
-                    console.log(coord);
-
-                    // matrix.inspect
-                    // goodImage = goodImage || coord.x > -1;
-                    // console.log(goodImage);
-                    // im.ellipse(coord.x + coord.width / 2, coord.y + coord.height / 2, coord.width / 2, coord.height / 2);
-
-                    // TODO: verify upper bound with resizing
-                    if (coord.x > -1) {
-                        im.preprocess([coord.x, coord.y], [coord.width, coord.height]);
-                    }
-                }
-                */
 
                 var pgmfilepath = imgpath.out + "/" + image.id + ".pgm";
                 console.log("saving pgm image, path = " + pgmfilepath);
