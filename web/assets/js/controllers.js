@@ -8,10 +8,12 @@ define(function(require) {
         require('js/controllers/testController'))
     .controller('registerController',
         require('js/controllers/registerController'))
-    .controller('view1Ctrl',
-        require('js/controllers/view1Ctrl'))
-    .controller('LoginCtrl',
-        require('js/controllers/LoginCtrl'));
+    .controller('userDashboardCtrl',
+        require('js/controllers/userDashboardCtrl'))
+    .controller('quizController',
+        require('js/controllers/quizController'))
+    .controller('loginCtrl',
+        require('js/controllers/loginCtrl'));
 
   return Controllers;
 });

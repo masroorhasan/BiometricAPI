@@ -1,3 +1,5 @@
+var derp = 0;
+
 var AuthController = {
 
     main: function(req, res) {
@@ -16,58 +18,51 @@ var AuthController = {
     },
 
     login: function(req, res) {
-        var data = req.param("data");
-        console.log("loginController data.username: "+ data.username);
+        var data = req.param("image");
+        var username = req.param("name");
+        console.log("loginController data.username: " + username);
 
-        var img = {
-            id: 0,
-            data: "data",
-            name: "name"
-        };
-
-        // var img = {
-        //     id: SessionService.newImageID(req.socket),
-        //     data: req.param("data"),
-        //     name: req.param("name")
-        // };
-
-        if (!img.data) {
+        if (!data) {
             console.log("Error: no image data");
             res.status(200);
             return;
         }
 
-        // img.data = img.data.replace(/^data:image\/png;base64,/, "");        
-        var images = [];
-        images.push(ImageService.createImageObject(img, 9));
+        data = data.replace(/^data:image\/png;base64,/, "");
+        var img = ImageService.createImageObject(username, data, derp++);
 
-        // Test
-        var image = ImageService.createImageObject(img, 9);
-        AuthService.login(data.username, image);
-        res.send("Response from auth/login");
+        var success =
 
-        res.status(200);
+        AuthService.login(username, img, function(matched) {
+          if (!matched) {
+            console.log("failed login");
+            res.status(401).json({msg: 'Failed login', error: 'failed login'});
+            //res.send("Login failure");
+          } else {
+            //res.send("Response from auth/login");
+            console.log("success login");
+            res.status(200).json({msg: 'Successful login'});
+          }
+        });
+    },
+
+    testreg: function(req, res) {
+      console.log("name: %j", req.param("name"));
+      console.log("params: %j", req.params);
+      res.send(200);
     },
 
     register: function(req, res) {
         // array of 10 base64 image data
-        var images_data = req.param("images");
-        var name = req.param("name");
-        console.log("registerController name: " + name.user);
-
-        // var img = {
-        //     id: SessionService.newImageID(req.socket),
-        //     data: req.param("data"),
-        //     name: req.param("name")
-        // };
+        var name = req.param('name');
+        var images_data = req.param('images');
+        console.log("registerController name: %j", name);
 
         if (images_data.length < 1) {
             console.log("Error: no image data");
             res.status(200);
             return;
         }
-
-        // img.data = img.data.replace(/^data:image\/png;base64,/, "");
 
         // Create user object
         var user_obj = UserService.createUser(name.user, name.first, name.last);
@@ -87,7 +82,7 @@ var AuthController = {
         // AuthService.register:
         // Save images (pngs and pgms) - ImageService
         // Save users and images in ES
-        // 
+        //
 
         AuthService.register(user_obj, images, function(err, user_id/*, imageids, usercvid*/){
             if(err) {
@@ -99,7 +94,6 @@ var AuthController = {
                 res.send("Response from auth/register");
             }
         });
-        
 
         res.status(200);
     }

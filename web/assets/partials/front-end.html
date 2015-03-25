@@ -1,12 +1,13 @@
 <div id="image-container" class="">
-  <div id="note"></div>
-  <video id="video" width="640" height="480" autoplay></video>
+  <div ng-show="note.length" id="note">{{ note }}</div>
+  <video ng-hide="quiz" id="video" width="640" height="480" autoplay></video>
   <canvas id="hiddenCanvas" width="640" height="480" style="display: none;"></canvas>
 
-  <label ng-show='register'>{{ labels.name.user }}</label><input ng-show='register' type="text" ng-model="name.user"/>
-  <label ng-show='register'>{{ labels.name.first }}</label><input ng-show='register' type="text" ng-model="name.first"/>
-  <label ng-show='register'>{{ labels.name.last }}</label><input ng-show='register' type="text" ng-model="name.last"/>
-  <button class="captureButton" ng-click="$emit('capture-image')">Capture</button>
-  <button ng-show='register' ng-click="$emit('submit')">Login</button>
+  <label ng-show='inputs.name.user'>{{ labels.name.user }}</label><input ng-show='inputs.name.user' type="text" ng-model="name.user"/>
+  <label ng-show='inputs.name.first'>{{ labels.name.first }}</label><input ng-show='inputs.name.first' type="text" ng-model="name.first"/>
+  <label ng-show='inputs.name.last'>{{ labels.name.last }}</label><input ng-show='inputs.name.last' type="text" ng-model="name.last"/>
+  <button ng-show='inputs.captureButton' class="captureButton" ng-click="$emit('capture-image')">Capture</button>
+  <button ng-show='inputs.register' ng-click="$emit('submit')">Register</button>
+  <button ng-show='inputs.login' ng-click="$emit('login')">Login</button>
 
 </div>

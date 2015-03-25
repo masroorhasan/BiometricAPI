@@ -1,8 +1,37 @@
 define(function(require) {
   var angular = require('angular');
-  return ['$scope', '$http', '$log', function($scope, $http, $log, $interval, socket) {
-    $scope.images = [];
-    $scope.register = true;
+  return ['$scope', '$http', '$log', '$interval', 'socket', '$location', function($scope, $http, $log, $interval, socket, $location) {
+    $scope.inputs = {
+      name: {
+        user: true,
+        first: true,
+        last: true
+      },
+      register: true
+    };
 
+    $scope.$on('submit', function() {
+      // used by registerController
+      $log.log("submit");
+      var count = 0;
+      var limit = 10;
+
+      $interval(function() {
+        $log.log('interval');
+        // take limit number of pictures and store in images array
+        // call the http post handler when all images have been taken
+        $scope.ctx.drawImage($scope.video, 0, 0, $scope.canvas.width, $scope.canvas.height);
+        socket.emit('register-image', {
+          name: $scope.name,
+          image: $scope.canvas.toDataURL()
+        });
+        if (++count == limit) {
+          socket.emit('register-end', {
+            name: $scope.name
+          });
+          $location.path('/dashboard');
+        }
+      }, 500, limit);
+    });
   }];
 });

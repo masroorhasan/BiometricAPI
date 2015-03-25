@@ -35,7 +35,12 @@ module.exports.http = {
     // The body parser that will handle incoming multipart HTTP requests.
     // By default as of v0.10, Sails uses [skipper](http://github.com/balderdashy/skipper).
     // See http://www.senchalabs.org/connect/multipart.html for other options.
-    // bodyParser: require('skipper')
+    /*bodyParser: {
+      fn: require('connect-busboy'),
+      options: {
+        limit: 8248242
+      }
+    }*/
 
   },
 
