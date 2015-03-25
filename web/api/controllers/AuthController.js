@@ -31,7 +31,11 @@ var AuthController = {
         data = data.replace(/^data:image\/png;base64,/, "");
         var img = ImageService.createImageObject(username, data, derp++);
 
-        var success =
+         var metadata = image.metadata;
+        var imgtype = "auth";
+        metadata.imgtype = imgtype;
+
+        image.metadata = metadata;
 
         AuthService.login(username, img, function(user) {
           if (!user) {
@@ -43,6 +47,38 @@ var AuthController = {
             console.log("success login");
             res.status(200).json({msg: 'Successful login', user: user});
           }
+        });
+    },
+
+    session: function(req, res) {
+        var data = req.param("image");
+        var username = req.param("name");
+        console.log("loginController data.username: " + username);
+
+        if (!data) {
+            console.log("Error: no image data");
+            res.status(200);
+            return;
+        }
+
+        data = data.replace(/^data:image\/png;base64,/, "");
+        var img = ImageService.createImageObject(username, data, derp++);
+
+        var metadata = image.metadata;
+        var imgtype = "session";
+        metadata.imgtype = imgtype;
+
+        image.metadata = metadata;
+
+        AuthService.authUser(username, image, function(user) {
+          console.log("AuthService login: %s", user ? "success" : "failure");
+          console.log("matched: %s", user ? true : false);
+
+          // cb(user);
+          if(user) {
+            res.status(200).json({msg: 'Matched', user: user});
+          }
+
         });
     },
 

@@ -171,16 +171,6 @@ module.exports = {
         return;
       }
 
-      // TODO: Modularize code *********
-      var imgtype = {
-        "id": "auth",
-        "data": "login"
-      };
-
-      // Update type
-      var metadata = image.metadata;
-      metadata.imgtype += imgtype.id;
-
       // Update path
       var userdir = FileStructureService.getUserDir(user.id);
 
@@ -202,6 +192,28 @@ module.exports = {
       // Write .png and .pgm files
       // Run training (?) and predictor methods
       // Check user.id == predictor.id ?
+
+
+      var imgtype = metadata.imgtype;
+      if(imgtype == "session") {
+            path_out = FileStructureService.getSessionsDir(user.id) + "/out";
+          path_sample = FileStructureService.getSessionsDir(user.id) + "/sample";
+
+          imgpath.out = path_out;
+          imgpath.sample = path_sample;
+
+          metadata.path = imgpath;
+          image.metadata = metadata;
+      } else {
+            path_out = FileStructureService.getAuthDir(user.id) + "/out";
+          path_sample = FileStructureService.getAuthDir(user.id) + "/sample";
+
+          imgpath.out = path_out;
+          imgpath.sample = path_sample;
+
+          metadata.path = imgpath;
+          image.metadata = metadata;
+      }
 
       // Write .png and .pgm files
       ImageService.writePNGImageFile(image, function(err) {
@@ -309,11 +321,12 @@ module.exports = {
                 console.log("user.id: " + user.id);
                 console.log(image);
 
-                ImageService.createAuthImage(image, user.id, function(err, model) {
-                    console.log("createAuthImage cb, imageid " + model.id);
-                    // cb(err, model.id, model);
-                });
 
+                
+                ImageService.createAuthImage(image, user.id, function(err, model) {
+                        console.log("createAuthImage cb, imageid " + model.id);
+                        // cb(err, model.id, model);
+                    });
 
               });
             }
