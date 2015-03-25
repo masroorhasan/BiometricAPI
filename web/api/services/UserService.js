@@ -25,10 +25,10 @@ module.exports = {
     return user;
   },
 
-  getUserByUsername: function(username) {
+  getUserByUsername: function(username, cb) {
     // console.log(value.toString());
     // console.log('getUserByUsername, username ' + value);
-    return User.find({
+    User.find({
       // id: '',
       username: username.toString()
     }).exec(function(err, model) {
@@ -38,14 +38,14 @@ module.exports = {
       var user = _.findWhere(model, {
         username: username
       });
+      console.log("found user: %j", user);
       if (user) {
         console.log(user);
         console.log("username matched getUserByUsername");
       } else {
         console.log("no username match found");
       }
-      return user;
-
+      cb(user);
     });
 
     return;

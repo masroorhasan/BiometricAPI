@@ -40,13 +40,9 @@ module.exports = {
 
 
     AuthService.authUser(username, image, function(matched) {
-      if (matched) {
-        console.log("AuthService login: success");
+      console.log("AuthService login: %s", matched ? "success" : "failure");
+      console.log("matched: %s", matched);
 
-        // TODO Error
-        // return Sessions.newSession(username);
-      }
-      console.log("AuthService login: failure");
       cb(matched);
     });
 
@@ -166,124 +162,125 @@ module.exports = {
     var userMatched = false;
     // TODO: UserService.get(...)
     // Get user id from username
-    var user = UserService.getUserByUsername(username);
+    UserService.getUserByUsername(username, function(user) {
+      console.log("user: %j", user);
 
-    if (!user) {
-      console.log("No users match username: %s", username);
-      logincb(false);
-      return;
-    }
-
-    // TODO: Modularize code *********
-    var imgtype = {
-      "id": "auth",
-      "data": "login"
-    };
-
-    // Update type
-    var metadata = image.metadata;
-    metadata.imgtype += imgtype.id;
-
-    // Update path
-    var userdir = FileStructureService.getUserDir(user.id);
-
-    var path_out = "";
-    var path_sample = "";
-    var imgpath = metadata.path;
-
-    path_out = FileStructureService.getAuthDir(user.id) + "/out";
-    path_sample = FileStructureService.getAuthDir(user.id) + "/sample";
-
-    imgpath.out = path_out;
-    imgpath.sample = path_sample;
-
-    metadata.path = imgpath;
-    image.metadata = metadata;
-
-    console.log("Image after update: " + image);
-    // TODO:
-    // Write .png and .pgm files
-    // Run training (?) and predictor methods
-    // Check user.id == predictor.id ?
-
-    // Write .png and .pgm files
-    ImageService.writePNGImageFile(image, function(err) {
-      if (!err) {
-        // Write .pgm file
-        ImageService.writePostDetectionFile(image, function(err, pgmimagefilepath) {
-          // console.log("writePostDetectionFile cb");
-
-          if ((!pgmimagefilepath) || (0 === pgmimagefilepath.length)) {
-            console.log("bad image");
-            logincb(false);
-            return;
-          }
-
-          // TODO: Call training and precitor methods
-          console.log("Finished writing pgm file");
-          // var success = userMatched && imagedMatched;
-
-          // Recognition CODE: *************
-          // Create recognizer object
-          var cv = CVService.cv;
-          // var facerec = cv.FaceRecognizer.createLBPHFaceRecognizer();
-          var facerec = RecognizerService.facerec();
-
-          var metadata = image.metadata;
-          var imgpath = metadata.path;
-          var pgm_filepath = imgpath.out + "/" + image.id + ".pgm";
-
-          // console.log(pgm_filepath);
-
-
-          console.log("running recognizer");
-          if (FileStructureService.existsFilePathSync(pgm_filepath)) {
-            console.log("file exists " + pgm_filepath);
-
-            cv.readImage(pgm_filepath, function(e, im) {
-
-              console.log("cv.readImage");
-              // Image match
-              var imageMatched = false;
-
-              // Load global yml
-              // var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
-              // facerec.loadSync(globalyml);
-
-              var useryml = FileStructureService.getUserYML(user.id);
-              console.log("loading user yml " + useryml);
-              facerec.loadSync(useryml);
-
-              var predictiondata = facerec.predictSync(im);
-              console.log(predictiondata);
-
-              imageMatched |= user.id == predictiondata.id;
-
-              console.log("user.id " + user.id);
-              console.log("predictiondata.id " + predictiondata.id);
-              console.log("imageMatched " + imageMatched);
-
-              // Update yml
-
-              var matched = ((imageMatched == 1) && (userMatched == 1));
-              console.log("matched: " + matched);
-
-
-              if (matched == true) {
-                modelData = [];
-                modelData.push([user.id, pgm_filepath]);
-
-                console.log("Updating yml for user ", user.id);
-                facerec.updateSync(modelData);
-              }
-
-              logincb(matched);
-              // return ((imageMatched == 1) && (userMatched == 1));
-            });
-          }
-        });
+      if (!user) {
+        console.log("No users match username: %s", username);
+        logincb(true);
+        return;
       }
-      logincb(false);
+
+      // TODO: Modularize code *********
+      var imgtype = {
+        "id": "auth",
+        "data": "login"
+      };
+
+      // Update type
+      var metadata = image.metadata;
+      metadata.imgtype += imgtype.id;
+
+      // Update path
+      var userdir = FileStructureService.getUserDir(user.id);
+
+      var path_out = "";
+      var path_sample = "";
+      var imgpath = metadata.path;
+
+      path_out = FileStructureService.getAuthDir(user.id) + "/out";
+      path_sample = FileStructureService.getAuthDir(user.id) + "/sample";
+
+      imgpath.out = path_out;
+      imgpath.sample = path_sample;
+
+      metadata.path = imgpath;
+      image.metadata = metadata;
+
+      console.log("Image after update: " + image);
+      // TODO:
+      // Write .png and .pgm files
+      // Run training (?) and predictor methods
+      // Check user.id == predictor.id ?
+
+      // Write .png and .pgm files
+      ImageService.writePNGImageFile(image, function(err) {
+        if (!err) {
+          // Write .pgm file
+          ImageService.writePostDetectionFile(image, function(err, pgmimagefilepath) {
+            // console.log("writePostDetectionFile cb");
+
+            if ((!pgmimagefilepath) || (0 === pgmimagefilepath.length)) {
+              console.log("bad image");
+              logincb();
+              return;
+            }
+
+            // TODO: Call training and precitor methods
+            console.log("Finished writing pgm file");
+            // var success = userMatched && imagedMatched;
+
+            // Recognition CODE: *************
+            // Create recognizer object
+            var cv = CVService.cv;
+            // var facerec = cv.FaceRecognizer.createLBPHFaceRecognizer();
+            var facerec = RecognizerService.facerec();
+
+            var metadata = image.metadata;
+            var imgpath = metadata.path;
+            var pgm_filepath = imgpath.out + "/" + image.id + ".pgm";
+
+            // console.log(pgm_filepath);
+
+
+            console.log("running recognizer");
+            if (FileStructureService.existsFilePathSync(pgm_filepath)) {
+              console.log("file exists " + pgm_filepath);
+
+              cv.readImage(pgm_filepath, function(e, im) {
+
+                console.log("cv.readImage");
+                // Image match
+                var imageMatched = false;
+
+                // Load global yml
+                // var globalyml = FileStructureService.getGlobalYmlDir() + "/global.yml";
+                // facerec.loadSync(globalyml);
+
+                var useryml = FileStructureService.getUserYML(user.id);
+                console.log("loading user yml " + useryml);
+                facerec.loadSync(useryml);
+
+                var predictiondata = facerec.predictSync(im);
+                console.log(predictiondata);
+
+                imageMatched |= user.id == predictiondata.id;
+
+                console.log("user.id " + user.id);
+                console.log("predictiondata.id " + predictiondata.id);
+                console.log("imageMatched " + imageMatched);
+
+                // Update yml
+
+                var matched = ((imageMatched == 1) && (userMatched == 1));
+                console.log("matched: " + matched);
+
+
+                if (matched == true) {
+                  modelData = [];
+                  modelData.push([user.id, pgm_filepath]);
+
+                  console.log("Updating yml for user ", user.id);
+                  facerec.updateSync(modelData);
+                }
+
+                logincb(matched);
+                // return ((imageMatched == 1) && (userMatched == 1));
+              });
+            }
+          });
+        }
+      });
 
     });
   },
