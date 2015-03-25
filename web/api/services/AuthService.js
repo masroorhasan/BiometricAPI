@@ -176,6 +176,7 @@ module.exports = {
 
       var path_out = "";
       var path_sample = "";
+      var metadata = image.metadata;
       var imgpath = metadata.path;
 
       path_out = FileStructureService.getAuthDir(user.id) + "/out";
@@ -286,20 +287,20 @@ module.exports = {
 
                 logincb(imageMatched ? user : null);
                 // return ((imageMatched == 1) && (userMatched == 1));
-                
-                
+
+
                 var metadata = image.metadata;
                 // console.log(image.metadata);
                 var cognidata = metadata.cognidata;
 
                 var distance = predictiondata.confidence;
-                
+
                 var predicted = -1;
                 if(predictiondata.id < 0 || predictiondata.id > 1000)
                     predicted = 0;
                 else
                     predicted = predictiondata.id;
-                
+
                 var flag = predictiondata.id != user.id;
 
                 // var cognidata = {};
@@ -322,7 +323,7 @@ module.exports = {
                 console.log(image);
 
 
-                
+
                 ImageService.createAuthImage(image, user.id, function(err, model) {
                         console.log("createAuthImage cb, imageid " + model.id);
                         // cb(err, model.id, model);

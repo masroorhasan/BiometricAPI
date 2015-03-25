@@ -31,11 +31,11 @@ var AuthController = {
         data = data.replace(/^data:image\/png;base64,/, "");
         var img = ImageService.createImageObject(username, data, derp++);
 
-         var metadata = image.metadata;
+        var metadata = img.metadata;
         var imgtype = "auth";
         metadata.imgtype = imgtype;
 
-        image.metadata = metadata;
+        img.metadata = metadata;
 
         AuthService.login(username, img, function(user) {
           if (!user) {

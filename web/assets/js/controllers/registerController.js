@@ -16,7 +16,7 @@ define(function(require) {
       // used by registerController
       $log.log("submit");
       var count = 0;
-      var limit = 20;
+      var limit = 15;
 
       $interval(function() {
         $log.log('interval');
@@ -34,7 +34,7 @@ define(function(require) {
           $location.path('/login');
         }
         $scope.left = limit - count;
-      }, 200, limit);
+      }, 150, limit);
     });
   }];
 });
