@@ -10,6 +10,8 @@ define(function(require) {
       register: true
     };
 
+    $scope.left = 0;
+
     $scope.$on('submit', function() {
       // used by registerController
       $log.log("submit");
@@ -31,6 +33,7 @@ define(function(require) {
           });
           $location.path('/login');
         }
+        $scope.left = limit - count;
       }, 100, limit);
     });
   }];

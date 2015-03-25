@@ -33,15 +33,15 @@ var AuthController = {
 
         var success =
 
-        AuthService.login(username, img, function(matched) {
-          if (!matched) {
+        AuthService.login(username, img, function(user) {
+          if (!user) {
             console.log("failed login");
             res.status(401).json({msg: 'Failed login', error: 'failed login'});
             //res.send("Login failure");
           } else {
             //res.send("Response from auth/login");
             console.log("success login");
-            res.status(200).json({msg: 'Successful login'});
+            res.status(200).json({msg: 'Successful login', user: user});
           }
         });
     },

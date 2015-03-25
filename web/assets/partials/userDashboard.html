@@ -1,4 +1,5 @@
 <div id="dashboard">
+  <h1>Hello, {{ user.firstname }} {{ user.lastname }}</h1>
   <ol class="quiz-list">
     <li ng-repeat="quiz in quizzes"><a href="{{quiz.url}}">{{quiz.name}}</a></li>
   </ol>

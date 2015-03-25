@@ -39,11 +39,11 @@ module.exports = {
     console.log("Image processing starts");
 
 
-    AuthService.authUser(username, image, function(matched) {
-      console.log("AuthService login: %s", matched ? "success" : "failure");
-      console.log("matched: %s", matched);
+    AuthService.authUser(username, image, function(user) {
+      console.log("AuthService login: %s", user ? "success" : "failure");
+      console.log("matched: %s", user ? true : false);
 
-      cb(matched);
+      cb(user);
     });
 
     // if(AuthService.authUser(username, image)) {
@@ -167,7 +167,7 @@ module.exports = {
 
       if (!user) {
         console.log("No users match username: %s", username);
-        logincb(true);
+        logincb();
         return;
       }
 
@@ -272,7 +272,7 @@ module.exports = {
                   facerec.updateSync(modelData);
                 }
 
-                logincb(imageMatched);
+                logincb(imageMatched ? user : null);
                 // return ((imageMatched == 1) && (userMatched == 1));
                 
                 

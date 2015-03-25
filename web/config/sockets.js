@@ -47,8 +47,6 @@ module.exports.sockets = {
     socket.on('register-start', function(data) {
       console.log('register-start');
       // get username here
-      socket.derp = 0;
-      socket.limit = 10;
       console.log('socket: ' + socket.derp);
     });
 
@@ -98,6 +96,11 @@ module.exports.sockets = {
           console.log("registerController user_id " + user_id);
         }
       });
+      socket.user = user_obj;
+    });
+
+    socket.on('user', function() {
+      socket.emit('user', socket.user);
     });
 
     console.log("connected");

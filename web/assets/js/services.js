@@ -42,6 +42,8 @@ define(function(require) {
   Services
     .factory('AuthService',
       require('js/services/AuthService'))
+    .factory('UserService',
+      require('js/services/userService'))
     .factory('Image',
         require('js/services/ImageService'));
 

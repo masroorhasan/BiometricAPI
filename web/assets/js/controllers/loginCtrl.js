@@ -1,6 +1,6 @@
 define(function(require) {
   var angular = require('angular');
-  return ['$scope', '$http', '$log', '$interval', 'socket', '$location', function($scope, $http, $log, $interval, socket, $location) {
+  return ['$scope', '$http', '$log', '$interval', 'socket', '$location', 'UserService', function($scope, $http, $log, $interval, socket, $location, UserService) {
     $scope.inputs = {
       name: {
         user: true,
@@ -19,6 +19,7 @@ define(function(require) {
       }).
       success(function(data, status, headers, config) {
         $log.log('Successful login');
+        UserService.setUser(data.user);
         $location.path('/dashboard');
       }).
       error(function(data, status, headers, config) {
